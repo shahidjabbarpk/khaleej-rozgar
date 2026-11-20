@@ -12,7 +12,20 @@
           "package_name": "com.khaleejrozgar.jobs.mza"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "18725941989-deoeb8k4ljkc1i5r06nmoihcg36aavbb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.khaleejrozgar.jobs.mza",
+            "certificate_hash": "e844c362c88952386567f7926a5b43d8cf7f45d1"
+          }
+        },
+        {
+          "client_id": "18725941989-784ngveebtfj386dn12udc7rdmivdkiv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB3OJO4PjJOX80bFDtQFzkD61abZdybgO0"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "18725941989-784ngveebtfj386dn12udc7rdmivdkiv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -59,7 +59,7 @@ export const FIREBASE_CONFIG: {
   appId: '1:18725941989:web:75f3e1311fcc1f7b451a0c',
 };
 
-export const GOOGLE_WEB_CLIENT_ID = '';
+export const GOOGLE_WEB_CLIENT_ID = '18725941989-784ngveebtfj386dn12udc7rdmivdkiv.apps.googleusercontent.com';
 
 /** User job posts stay visible this long. */
 export const POST_LIFETIME_DAYS = 30;
