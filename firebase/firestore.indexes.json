@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    { "collectionGroup": "jobs", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "expiresAt", "order": "DESCENDING" } ] },
+    { "collectionGroup": "jobs", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "country", "order": "ASCENDING" }, { "fieldPath": "expiresAt", "order": "DESCENDING" } ] },
+    { "collectionGroup": "seekers", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "expiresAt", "order": "DESCENDING" } ] },
+    { "collectionGroup": "seekers", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "country", "order": "ASCENDING" }, { "fieldPath": "expiresAt", "order": "DESCENDING" } ] }
+  ],
+  "fieldOverrides": []
+}

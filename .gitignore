@@ -1,0 +1,13 @@
+node_modules/
+.expo/
+dist/
+android/
+ios/
+credentials/
+*.keystore
+*.jks
+*.log
+release/
+worker/node_modules/
+worker/.wrangler/
+.env*

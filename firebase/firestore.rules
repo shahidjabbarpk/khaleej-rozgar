@@ -1,0 +1,151 @@
+rules_version = '2';
+
+// Khaleej Rozgar - every rule the app depends on lives here (Spark plan: no Cloud Functions).
+//  - browsing: anyone (guest = anonymous auth) reads ACTIVE posts
+//  - posting: real login (Google / email), accepted terms, not banned, max 3 posts a day, valid fields
+//  - verified badge / admin / bans: only the admin, by hand in the Firebase console
+//  - reports: one per user per post; the post's reportCount may go up by exactly 1, and at 3 it hides itself
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function realUser() { return signedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous'; }
+    function me() { return request.auth.uid; }
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(me())); }
+    function banned() { return exists(/databases/$(database)/documents/banned/$(me())); }
+    function today() { return int(request.time.toMillis() / 86400000); }
+    function str(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
+    function country(v) { return v in ['sa', 'ae', 'qa', 'kw', 'om', 'bh']; }
+    function category(v) {
+      return v in ['driver', 'construction', 'cleaning', 'hotel', 'security', 'sales', 'office', 'it', 'health',
+        'engineering', 'teaching', 'delivery', 'factory', 'other'];
+    }
+    function profileAfter() { return getAfter(/databases/$(database)/documents/profiles/$(me())).data; }
+    function profileBefore() { return get(/databases/$(database)/documents/profiles/$(me())).data; }
+    function acceptedTerms() { return profileBefore().get('acceptedTermsAt', null) != null; }
+
+    /** The batch that creates a post must also bump profiles/{uid}.postCount for today (max 3). */
+    function countsToday() {
+      let before = get(/databases/$(database)/documents/profiles/$(me())).data;
+      let after = profileAfter();
+      let prev = before.get('postDay', -1) == today() ? before.get('postCount', 0) : 0;
+      return after.postDay == today() && after.postCount == prev + 1 && after.postCount <= 3;
+    }
+    function lifetimeOk(d) { return d.expiresAt is int && d.expiresAt <= request.time.toMillis() + 31 * 86400000; }
+
+    // ---------------------------------------------------------------- profiles
+    match /profiles/{uid} {
+      allow read: if signedIn() && (me() == uid || isAdmin());
+      allow create, update: if signedIn() && me() == uid
+        && (!request.resource.data.keys().hasAny(['name']) || str(request.resource.data.name, 0, 60))
+        && (!request.resource.data.keys().hasAny(['postCount']) || request.resource.data.postCount <= 3);
+      allow delete: if signedIn() && me() == uid;
+
+      match /blocked/{other} {
+        allow read, write: if signedIn() && me() == uid;
+      }
+    }
+
+    // ---------------------------------------------------------------- job posts
+    function validJob(d) {
+      return str(d.title, 3, 100) && str(d.company, 2, 80) && category(d.category) && country(d.country)
+        && (d.city == null || str(d.city, 1, 40))
+        && d.eligibility in ['locals', 'expats', 'visa', 'anyone', 'unknown']
+        && str(d.salary, 0, 60) && str(d.description, 30, 2000)
+        && str(d.whatsapp, 0, 20) && str(d.phone, 0, 20) && str(d.email, 0, 80)
+        && (d.whatsapp.size() > 0 || d.phone.size() > 0 || d.email.size() > 0)
+        && d.govt is bool && str(d.officialUrl, 0, 300)
+        && (d.govt == false || (isAdmin() && d.officialUrl.matches('https://.+')));
+    }
+
+    match /jobs/{id} {
+      allow read: if resource.data.status == 'active' || (signedIn() && resource.data.ownerUid == me()) || isAdmin();
+
+      allow create: if realUser() && !banned() && acceptedTerms() && countsToday()
+        && request.resource.data.ownerUid == me()
+        && request.resource.data.status == 'active'
+        && request.resource.data.reportCount == 0
+        && request.resource.data.verified == exists(/databases/$(database)/documents/verified/$(me()))
+        && str(request.resource.data.ownerName, 0, 60)
+        && lifetimeOk(request.resource.data)
+        && validJob(request.resource.data);
+
+      // owner: edit content / renew; can't touch verified, reports, or un-hide a hidden post
+      allow update: if realUser() && resource.data.ownerUid == me() && !banned()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['title', 'company', 'category', 'country', 'city', 'eligibility', 'salary', 'description',
+                       'whatsapp', 'phone', 'email', 'govt', 'officialUrl', 'expiresAt', 'status'])
+        && (request.resource.data.status == resource.data.status || (resource.data.status == 'expired' && request.resource.data.status == 'active'))
+        && lifetimeOk(request.resource.data)
+        && validJob(request.resource.data)
+        // reporters: +1 on reportCount (with their report doc in the same batch); hides itself at 3
+        || signedIn() && resource.data.ownerUid != me()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reportCount', 'status'])
+        && request.resource.data.reportCount == resource.data.reportCount + 1
+        && existsAfter(/databases/$(database)/documents/reports/$(id + '_' + me()))
+        && !exists(/databases/$(database)/documents/reports/$(id + '_' + me()))
+        && (request.resource.data.status == resource.data.status
+            || (request.resource.data.status == 'hidden' && request.resource.data.reportCount >= 3))
+        || isAdmin();
+
+      allow delete: if signedIn() && (resource.data.ownerUid == me() || isAdmin());
+    }
+
+    // ---------------------------------------------------------------- "I need a job"
+    match /seekers/{id} {
+      allow read: if resource.data.status == 'active' || (signedIn() && resource.data.ownerUid == me()) || isAdmin();
+      allow create: if realUser() && !banned() && acceptedTerms() && countsToday()
+        && request.resource.data.ownerUid == me()
+        && request.resource.data.status == 'active'
+        && request.resource.data.reportCount == 0
+        && str(request.resource.data.name, 2, 60) && category(request.resource.data.category)
+        && request.resource.data.experience is int && request.resource.data.experience >= 0 && request.resource.data.experience <= 50
+        && country(request.resource.data.country) && (request.resource.data.city == null || str(request.resource.data.city, 1, 40))
+        && str(request.resource.data.languages, 0, 80) && str(request.resource.data.text, 0, 600)
+        && str(request.resource.data.whatsapp, 5, 20)
+        && lifetimeOk(request.resource.data);
+      allow update: if signedIn() && resource.data.ownerUid != me()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reportCount', 'status'])
+        && request.resource.data.reportCount == resource.data.reportCount + 1
+        && existsAfter(/databases/$(database)/documents/reports/$(id + '_' + me()))
+        && !exists(/databases/$(database)/documents/reports/$(id + '_' + me()))
+        && (request.resource.data.status == resource.data.status
+            || (request.resource.data.status == 'hidden' && request.resource.data.reportCount >= 3))
+        || isAdmin();
+      allow delete: if signedIn() && (resource.data.ownerUid == me() || isAdmin());
+    }
+
+    // ---------------------------------------------------------------- reports (one per user per post)
+    match /reports/{rid} {
+      allow create: if signedIn()
+        && request.resource.data.uid == me()
+        && rid == request.resource.data.postId + '_' + me()
+        && request.resource.data.kind in ['job', 'seeker']
+        && request.resource.data.reason in ['scam', 'money', 'fakeGovt', 'wrong', 'offensive', 'other']
+        && str(request.resource.data.note, 0, 300);
+      allow get: if signedIn() && resource.data.uid == me();
+      allow read, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------- employer verification
+    match /verifyRequests/{uid} {
+      allow create, update: if realUser() && me() == uid
+        && str(request.resource.data.company, 2, 80) && str(request.resource.data.companyEmail, 3, 80)
+        && str(request.resource.data.crNumber, 4, 40);
+      allow read, delete: if isAdmin() || (signedIn() && me() == uid);
+    }
+    match /verified/{uid} {
+      allow get: if signedIn() && (me() == uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------- admin
+    match /admins/{uid} {
+      allow get: if signedIn() && me() == uid;
+    }
+    match /banned/{uid} {
+      allow get: if signedIn() && (me() == uid || isAdmin());
+      allow write: if isAdmin();
+    }
+  }
+}

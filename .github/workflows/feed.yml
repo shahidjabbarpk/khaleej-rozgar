@@ -1,0 +1,39 @@
+name: Build job feed + push new jobs
+
+on:
+  schedule:
+    - cron: "23 * * * *"   # every hour (GitHub may start a few minutes late)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: feed
+  cancel-in-progress: false
+
+jobs:
+  feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      # no npm install needed: the builder only uses fetch + node:crypto
+      - run: node --experimental-strip-types --no-warnings scraper/build-feed.ts
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          WORKER_URL: ${{ secrets.WORKER_URL }}
+          FEED_KEY: ${{ secrets.FEED_KEY }}
+      - name: Commit updated feed
+        run: |
+          git config user.name "khaleej-feed-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          NEW=$(node -e "console.log(require('./data/meta.json').new)")
+          git commit -m "feed: $NEW new ($(date -u +%FT%TZ))"
+          git pull --rebase -X theirs origin main
+          git push
