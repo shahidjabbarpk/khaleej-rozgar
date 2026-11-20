@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, View, type ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { GOOGLE_WEB_CLIENT_ID } from '@/lib/config';
 import { isAdmin, loadProfile, resetPassword, saveProfile, signInEmail, signInGoogle, signUpEmail, watchAuth, type AuthUser } from '@/lib/community';
 import { useI18n } from '@/lib/i18n';
 import { useApp } from '@/lib/store';
@@ -108,20 +109,24 @@ export function AuthCard({ onDone, title, style }: { onDone?: () => void; title?
       <Text style={[styles.title, tf('bold'), { color: c.text }]}>{title ?? t('authTitle')}</Text>
       <Text style={[tf(), styles.hint, { color: c.sub }]}>{t('authHint')}</Text>
 
-      <Tap onPress={google} disabled={!!busy} style={[styles.google, { borderColor: c.border, backgroundColor: c.card }]}>
-        {busy === 'google' ? <ActivityIndicator color={c.primary} /> : (
-          <>
-            <Icon name="google" size={20} color="#EA4335" />
-            <Text style={[tf('bold'), { color: c.text, fontSize: 14.5 }]}>{t('authGoogle')}</Text>
-          </>
-        )}
-      </Tap>
-
-      <View style={styles.or}>
-        <View style={[styles.line, { backgroundColor: c.border }]} />
-        <Text style={[tf(), { color: c.faint, fontSize: 12 }]}>{t('authOr')}</Text>
-        <View style={[styles.line, { backgroundColor: c.border }]} />
-      </View>
+      {/* Google login appears once the Google provider (web client id) is set up in Firebase */}
+      {!!GOOGLE_WEB_CLIENT_ID && (
+        <>
+          <Tap onPress={google} disabled={!!busy} style={[styles.google, { borderColor: c.border, backgroundColor: c.card }]}>
+            {busy === 'google' ? <ActivityIndicator color={c.primary} /> : (
+              <>
+                <Icon name="google" size={20} color="#EA4335" />
+                <Text style={[tf('bold'), { color: c.text, fontSize: 14.5 }]}>{t('authGoogle')}</Text>
+              </>
+            )}
+          </Tap>
+          <View style={styles.or}>
+            <View style={[styles.line, { backgroundColor: c.border }]} />
+            <Text style={[tf(), { color: c.faint, fontSize: 12 }]}>{t('authOr')}</Text>
+            <View style={[styles.line, { backgroundColor: c.border }]} />
+          </View>
+        </>
+      )}
 
       <View style={[styles.segment, { backgroundColor: c.cardAlt }]}>
         {(['login', 'signup'] as const).map((m) => (
