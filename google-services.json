@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "18725941989",
+    "project_id": "khaleej-rozgar-sj",
+    "storage_bucket": "khaleej-rozgar-sj.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18725941989:android:82c0ba642bc5f331451a0c",
+        "android_client_info": {
+          "package_name": "com.khaleejrozgar.jobs.mza"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3OJO4PjJOX80bFDtQFzkD61abZdybgO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

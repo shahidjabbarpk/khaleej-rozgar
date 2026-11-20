@@ -50,7 +50,14 @@ export const PROD_AD_UNITS = {
 /** Firebase web config of the Khaleej Rozgar project (NOT PakJobs). null = community features show "being set up". */
 export const FIREBASE_CONFIG: {
   apiKey: string; authDomain: string; projectId: string; storageBucket: string; messagingSenderId: string; appId: string;
-} | null = null;
+} | null = {
+  apiKey: 'AIzaSyDPhkKYeSO3Oqqsfiuzvef0yXat0IJgKAY',
+  authDomain: 'khaleej-rozgar-sj.firebaseapp.com',
+  projectId: 'khaleej-rozgar-sj',
+  storageBucket: 'khaleej-rozgar-sj.firebasestorage.app',
+  messagingSenderId: '18725941989',
+  appId: '1:18725941989:web:75f3e1311fcc1f7b451a0c',
+};
 
 export const GOOGLE_WEB_CLIENT_ID = '';
 
