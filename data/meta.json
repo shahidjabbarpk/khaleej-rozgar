@@ -1,13 +1,13 @@
 {
- "updatedAt": "2026-11-20T10:07:44.297Z",
+ "updatedAt": "2026-11-20T18:38:46.776Z",
  "total": 520,
- "new": 3,
- "pushes": 1,
+ "new": 2,
+ "pushes": 2,
  "sources": {
   "dubaicareers": 320,
-  "smartrecruiters:DeliveryHero": 97,
+  "smartrecruiters:DeliveryHero": 98,
   "greenhouse:careem": 6,
-  "greenhouse:tamara": 19,
+  "greenhouse:tamara": 18,
   "workable:foodics": 23,
   "workable:salla": 28,
   "workable:lucidya": 38
@@ -534,6 +534,8 @@
   "du-e099e41d7b8426b3",
   "du-9ba78e7249aa30f5",
   "du-1352587b19cc2083",
-  "du-673b07722bd7e306"
+  "du-673b07722bd7e306",
+  "sm-1b56e73c5b862490",
+  "sm-0203e96f07d7b1d2"
  ]
 }
