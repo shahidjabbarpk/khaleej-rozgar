@@ -36,14 +36,14 @@ export const NATIVE_AD_EVERY = 8;
 
 /**
  * REAL AdMob units (AdMob app "Khaleej Rozgar", publisher pub-2214888899948620).
- * Empty = Google test ads. Filled in when the AdMob app is created (build phase).
+ * AdMob app id ca-app-pub-2214888899948620~5317774739 (app.json). Debug builds still use Google test ads.
  */
 export const PROD_AD_UNITS = {
   android: {
-    appOpen: '',
-    banner: '',
-    native: '',
-    interstitial: '',
+    appOpen: 'ca-app-pub-2214888899948620/3316417022',
+    banner: 'ca-app-pub-2214888899948620/3136579934',
+    native: 'ca-app-pub-2214888899948620/1238928920',
+    interstitial: 'ca-app-pub-2214888899948620/2833327608', // display only (no video)
   },
 };
 
