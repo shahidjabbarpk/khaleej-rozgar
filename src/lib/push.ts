@@ -3,10 +3,10 @@
  * so a new job reaches ALL users the moment the feed builder or the Worker pushes it.
  * Re-run syncTopics() whenever country / categories / switches change.
  */
-import { getMessaging, onMessage, subscribeToTopic, unsubscribeFromTopic } from '@react-native-firebase/messaging';
+import { getMessaging, onMessage, setBackgroundMessageHandler, subscribeToTopic, unsubscribeFromTopic } from '@react-native-firebase/messaging';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { useApp } from './store';
+import { useApp, waitForHydration } from './store';
 import { topicsFor } from './topics';
 
 let syncing: Promise<void> | null = null;
@@ -37,6 +37,23 @@ export function syncTopics(): Promise<void> {
     syncing = null;
   });
   return syncing;
+}
+
+/**
+ * Pushes that arrive while the app is in the background / closed: Android shows them itself; we only
+ * keep them in the Alerts tab history. Must be registered at module scope (see app/_layout.tsx).
+ */
+export function registerBackgroundPushHandler() {
+  if (Platform.OS === 'web') return;
+  try {
+    setBackgroundMessageHandler(getMessaging(), async (msg) => {
+      const title = msg.notification?.title ?? '';
+      if (!title) return;
+      await waitForHydration();
+      const jobId = typeof msg.data?.jobId === 'string' ? msg.data.jobId : undefined;
+      useApp.getState().addAlert({ id: msg.messageId ?? `${Date.now()}`, title, body: msg.notification?.body ?? '', jobId, at: Date.now() });
+    });
+  } catch {}
 }
 
 /** A push that arrives while the app is open: show it like any other alert + keep it in Alerts history. */

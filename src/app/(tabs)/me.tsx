@@ -13,6 +13,7 @@ import { PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config';
 import { openStoreListing, shareApp } from '@/lib/engagement';
 import { applyLanguage, LANGS, type Lang, useI18n } from '@/lib/i18n';
 import { CITIES, COUNTRIES, COUNTRY_META, countryName } from '@/lib/places';
+import { refreshJobs } from '@/lib/feed';
 import { syncTopics } from '@/lib/push';
 import { useApp } from '@/lib/store';
 import { useTheme } from '@/lib/theme';
@@ -69,7 +70,7 @@ export default function Me() {
         <View style={[styles.pad, { gap: 10 }]}>
           <Dropdown full label={t('country')} icon="earth" value={s.country} allLabel={`🌍 ${t('allGulf')}`}
             options={COUNTRIES.map((cc) => ({ value: cc, label: `${COUNTRY_META[cc].flag}  ${countryName(cc, lang)}` }))}
-            onChange={(v) => { s.set({ country: (v as Country) ?? null, city: null }); syncTopics().catch(() => {}); }} />
+            onChange={(v) => { s.set({ country: (v as Country) ?? null, city: null }); syncTopics().catch(() => {}); refreshJobs().catch(() => {}); }} />
           {s.country && (
             <Dropdown full searchable label={t('city')} icon="map-marker" value={s.city} allLabel={t('allCities')}
               options={CITIES[s.country].map((x) => ({ value: x, label: x }))} onChange={(v) => s.set({ city: v })} />

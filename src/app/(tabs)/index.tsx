@@ -1,3 +1,4 @@
+import { useNetworkState } from 'expo-network';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Dropdown } from '@/components/Dropdown';
@@ -32,6 +33,8 @@ export default function Jobs() {
   const [elig, setElig] = useState<Eligibility | null>(null);
   const [seg, setSeg] = useState<'jobs' | 'workers'>('jobs');
   const [workers, setWorkers] = useState<Seeker[] | null>(null);
+  const net = useNetworkState();
+  const offline = net.isConnected === false;
 
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -91,6 +94,12 @@ export default function Jobs() {
             </Tap>
           )}
         </ScrollView>
+      )}
+      {offline && (
+        <View style={[styles.note, { backgroundColor: c.cardAlt }]}>
+          <Icon name="wifi-off" size={18} color={c.sub} />
+          <Text style={[styles.noteText, tf(), { color: c.text }]}>{t('offline')}</Text>
+        </View>
       )}
       {country === 'bh' && seg === 'jobs' && (
         <View style={[styles.note, { backgroundColor: c.primarySoft }]}>

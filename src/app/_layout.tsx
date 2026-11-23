@@ -20,11 +20,12 @@ import { isAdmin } from '@/lib/community';
 import { refreshJobs } from '@/lib/feed';
 import { syncDirection } from '@/lib/i18n';
 import { setupNotifications } from '@/lib/notify';
-import { listenForegroundPushes, syncTopics } from '@/lib/push';
+import { listenForegroundPushes, registerBackgroundPushHandler, syncTopics } from '@/lib/push';
 import { useApp, waitForHydration } from '@/lib/store';
 import { useTheme } from '@/lib/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+registerBackgroundPushHandler();
 
 let lastOpened = '';
 

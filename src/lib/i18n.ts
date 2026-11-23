@@ -49,7 +49,7 @@ export function applyLanguage(lang: Lang): boolean {
     } catch {
       DevSettings.reload();
     }
-  }, 300);
+  }, 900);
   return true;
 }
 

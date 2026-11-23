@@ -63,6 +63,7 @@ node scripts/sync-scam.mjs                # after editing the scam word list
 - Scam words: `src/lib/scam.ts`. After editing it, run `node scripts/sync-scam.mjs` for the Worker.
 - Limits: 3 posts a day per user, posts expire after 30 days, and links only for verified employers.
 - Account deletion: in the app (Me → Delete my account). It deletes the login, profile, posts and blocks. Reports are kept for fraud prevention.
+- Web deletion form (for Play Data safety): https://khaleej-rozgar.khaleej-rozgar-worker.workers.dev/delete-account. Requests land in D1 table `deletion_requests`: `npx wrangler d1 execute khaleej-rozgar --remote --command "SELECT * FROM deletion_requests"`.
 
 ## Play Console rules
 - Contact email: support@itgreenservices.com. Website: itgreenservices.com. Privacy: https://itgreenservices.com/app/privacy.

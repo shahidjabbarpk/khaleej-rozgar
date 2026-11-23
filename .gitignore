@@ -12,3 +12,5 @@ worker/node_modules/
 worker/.wrangler/
 .env*
 .setup/
+firebase/test/node_modules/
+*-debug.log

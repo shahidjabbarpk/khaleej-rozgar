@@ -6,6 +6,7 @@ import { useI18n } from '@/lib/i18n';
 import { COUNTRIES, COUNTRY_META, countryName } from '@/lib/places';
 import { useApp } from '@/lib/store';
 import { useTheme } from '@/lib/theme';
+import { refreshJobs } from '@/lib/feed';
 import { syncTopics } from '@/lib/push';
 import { Dropdown } from './Dropdown';
 
@@ -44,6 +45,7 @@ export function CountryButton() {
       onChange={(v) => {
         set({ country: (v as typeof country) ?? null, city: null });
         syncTopics().catch(() => {});
+        refreshJobs().catch(() => {});
       }}
       light
     />

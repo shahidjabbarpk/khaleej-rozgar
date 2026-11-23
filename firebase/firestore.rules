@@ -123,7 +123,8 @@ service cloud.firestore {
         && request.resource.data.kind in ['job', 'seeker']
         && request.resource.data.reason in ['scam', 'money', 'fakeGovt', 'wrong', 'offensive', 'other']
         && str(request.resource.data.note, 0, 300);
-      allow get: if signedIn() && resource.data.uid == me();
+      // the author may check their own (possibly missing) report doc: id = <postId>_<uid>
+      allow get: if signedIn() && rid.matches('.+_' + me());
       allow read, delete: if isAdmin();
     }
 

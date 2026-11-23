@@ -35,6 +35,7 @@ export default {
       if (req.method === 'POST' && url.pathname === '/found') return await found(req, env);
       if (req.method === 'GET' && url.pathname === '/finds') return await finds(req, env);
       if (url.pathname === '/seen') return await seen(req, env, url);
+      if (url.pathname === '/delete-account') return await deleteAccountPage(req, env);
       if (url.pathname === '/') return json({ ok: true, app: 'khaleej-rozgar' });
       return json({ error: 'not found' }, 404);
     } catch (e) {
@@ -136,6 +137,39 @@ async function seen(req, env, url) {
   if (!ids.length) return json({ seen: [] });
   const q = await env.DB.prepare(`SELECT id FROM seen WHERE id IN (${ids.map(() => '?').join(',')})`).bind(...ids).all();
   return json({ seen: (q.results ?? []).map((r) => r.id) });
+}
+
+// ---------------------------------------------------------------- account deletion web page (Play policy)
+
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const page = (body) => new Response(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Delete your Khaleej Rozgar account</title><style>body{font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1d2420;line-height:1.55}
+h1{color:#0B6E4F;font-size:24px}input,textarea{width:100%;box-sizing:border-box;padding:12px;margin:6px 0 14px;border:1px solid #cfd8d3;border-radius:10px;font-size:16px}
+button{background:#0B6E4F;color:#fff;border:0;border-radius:10px;padding:14px 20px;font-size:16px;width:100%}small{color:#5f6b64}</style></head><body>${body}</body></html>`,
+  { headers: { 'content-type': 'text/html; charset=utf-8' } });
+
+/**
+ * GET: form. POST: saves the request; the admin deletes the account by hand (Firebase console) within 30 days.
+ * In the app the user can also delete it at once: Me -> Delete my account.
+ */
+async function deleteAccountPage(req, env) {
+  if (req.method === 'POST') {
+    const f = await req.formData();
+    const email = String(f.get('email') ?? '').trim().slice(0, 120);
+    const note = String(f.get('note') ?? '').trim().slice(0, 500);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return page('<h1>Please go back and enter a valid email.</h1>');
+    const ip = req.headers.get('cf-connecting-ip') ?? 'unknown';
+    if (!(await rateOk(env, `del:${ip}`, 1))) return page('<h1>Too many requests. Please try again tomorrow.</h1>');
+    await env.DB.prepare('INSERT INTO deletion_requests (email, note, at) VALUES (?, ?, ?)').bind(email, note, Date.now()).run();
+    return page(`<h1>Request received</h1><p>We will delete the Khaleej Rozgar account for <b>${esc(email)}</b> and its posts within 30 days.</p>`);
+  }
+  return page(`<h1>Delete your Khaleej Rozgar account</h1>
+<p>Fastest way: open the app → <b>Me</b> → <b>Delete my account</b>. It deletes your login, profile, job posts and "I need a job" posts at once.</p>
+<p>No longer have the app? Send this form and we delete them within 30 days.</p>
+<p><small>Kept for fraud prevention: reports you sent about other posts (without your name), for up to 12 months. Nothing else is kept.</small></p>
+<form method="post"><label>Email you used to log in</label><input name="email" type="email" required>
+<label>Note (optional)</label><textarea name="note" rows="3"></textarea><button type="submit">Request account deletion</button></form>
+<p><small>Questions: support@itgreenservices.com</small></p>`);
 }
 
 // ---------------------------------------------------------------- FCM topic push (HTTP v1)

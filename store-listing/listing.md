@@ -184,5 +184,5 @@ Collected:
 - **Name and phone number:** posts written by users (shown publicly on their post).
 - **Other user-generated content:** job posts, "I need a job" posts, reports.
 
-Encrypted in transit: yes. Account deletion: in the app (Me → Delete my account) and by email to support@itgreenservices.com.
+Encrypted in transit: yes. Account deletion: in the app (Me → Delete my account) and on the web: https://khaleej-rozgar.khaleej-rozgar-worker.workers.dev/delete-account (use this URL in the Data safety form).
 Translation runs on the phone (ML Kit): the job text is not sent anywhere.
