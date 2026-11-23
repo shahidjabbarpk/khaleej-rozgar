@@ -11,7 +11,7 @@ export const FEED_URLS = [
  * Cloudflare Worker (worker/ folder): /found (a phone reports a job it found -> push to everyone),
  * /seen, /careerjet. Empty = the phone keeps working on its own (feed + local alerts only).
  */
-export const WORKER_URL = process.env.EXPO_PUBLIC_WORKER_URL ?? '';
+export const WORKER_URL = process.env.EXPO_PUBLIC_WORKER_URL ?? 'https://khaleej-rozgar.khaleej-rozgar-worker.workers.dev';
 
 export const STORE_URL = 'https://play.google.com/store/apps/details?id=com.khaleejrozgar.jobs.mza';
 export const SITE_URL = 'https://itgreenservices.com';

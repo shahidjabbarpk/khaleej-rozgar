@@ -10,10 +10,10 @@ main = "src/index.js"
 compatibility_date = "2026-10-01"
 
 [vars]
-FIREBASE_PROJECT_NUMBER = ""   # App Check: project number of the Khaleej Rozgar Firebase project
-REQUIRE_APP_CHECK = "true"
+FIREBASE_PROJECT_NUMBER = "18725941989"   # App Check: project number of the Khaleej Rozgar Firebase project
+REQUIRE_APP_CHECK = "false"  # turn to "true" once App Check (Play Integrity) is registered after the Play listing
 
 [[d1_databases]]
 binding = "DB"
 database_name = "khaleej-rozgar"
-database_id = "REPLACE_AFTER_d1_create"
+database_id = "4bc1dc30-80f5-4deb-81b9-ca2b2ba2b659"

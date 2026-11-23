@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { markOpenedFromNotification, startAds } from '@/lib/ads';
+import { startAppCheck } from '@/lib/appcheck';
 import { track } from '@/lib/analytics';
 import { registerBackgroundDetector } from '@/lib/background';
 import { isAdmin } from '@/lib/community';
@@ -100,6 +101,7 @@ export default function RootLayout() {
       refreshJobs().catch(() => {});
       isAdmin().then((admin) => useApp.getState().set({ admin })).catch(() => {});
       if (Platform.OS === 'web') return;
+      startAppCheck();
       startAds();
       if (!s.onboarded) return; // onboarding asks for the permission itself
       setupNotifications(false)
