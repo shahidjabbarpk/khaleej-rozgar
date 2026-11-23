@@ -35,6 +35,7 @@ interface AppState {
   onboarded: boolean;
   lastInterstitial: number;
   lastAppOpenAd: number;
+  selfRestartAt: number;      // app restarted itself (language / RTL switch) - no App Open ad right after
   launches: number;
   syncing: boolean;           // not persisted - drives skeleton loaders
   alertsSeenAt: number;
@@ -77,6 +78,7 @@ export const useApp = create<AppState>()(
       onboarded: false,
       lastInterstitial: 0,
       lastAppOpenAd: 0,
+      selfRestartAt: 0,
       launches: 0,
       syncing: false,
       alertsSeenAt: Date.now(),

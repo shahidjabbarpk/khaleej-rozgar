@@ -41,7 +41,8 @@ export function applyLanguage(lang: Lang): boolean {
   if (Platform.OS === 'web' || I18nManager.isRTL === rtl) return false;
   I18nManager.allowRTL(rtl);
   I18nManager.forceRTL(rtl);
-  // layout direction only changes after a JS reload
+  // layout direction only changes after a JS reload; the reload is not a real app open, so no App Open ad
+  useApp.getState().set({ selfRestartAt: Date.now() });
   setTimeout(() => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports

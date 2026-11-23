@@ -50,6 +50,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "./plugins/withFcmChannelFix",
       "expo-router",
       [
         "expo-splash-screen",

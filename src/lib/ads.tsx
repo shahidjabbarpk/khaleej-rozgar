@@ -69,6 +69,7 @@ function maybeShowAppOpen() {
   // first launch = onboarding; second+ launches only
   if (!s.onboarded || s.launches < 2 || openedFromNotification) return;
   if (Date.now() - s.lastAppOpenAd < APP_OPEN_GAP_MS) return;
+  if (Date.now() - s.selfRestartAt < 60_000) return; // we just restarted for a language change
   const ad = AppOpenAd.createForAdRequest(AD_UNITS.appOpen);
   const giveUpAt = Date.now() + 6000; // a slow ad must not pop up in the middle of using the app
   ad.addAdEventListener(AdEventType.LOADED, () => {
