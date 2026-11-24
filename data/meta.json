@@ -1,10 +1,10 @@
 {
- "updatedAt": "2026-11-23T20:18:42.438Z",
- "total": 516,
+ "updatedAt": "2026-11-24T04:50:13.984Z",
+ "total": 517,
  "new": 1,
  "pushes": 1,
  "sources": {
-  "dubaicareers": 313,
+  "dubaicareers": 314,
   "smartrecruiters:DeliveryHero": 100,
   "greenhouse:careem": 6,
   "greenhouse:tamara": 19,
@@ -559,6 +559,7 @@
   "gr-07a4b664928cce49",
   "sm-e70d1eaf9770e8e6",
   "sm-6f4b6099602495d3",
-  "du-c29b746941c7fc77"
+  "du-c29b746941c7fc77",
+  "du-dddde9695194c1e4"
  ]
 }
