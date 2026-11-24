@@ -9,7 +9,7 @@
  *   4. Safety nets: no interstitial in the first LAUNCH_GRACE_MS, and FULLSCREEN_GAP_MS between any two
  *      full-screen ads. Never on forms, Back, exit, or a notification open. Call/WhatsApp never get one.
  *   5. Banner at the bottom of list screens + job detail; one native card every NATIVE_AD_EVERY jobs.
- * Test ads in __DEV__ or while PROD_AD_UNITS is empty.
+ * Test ads ONLY in __DEV__. A release build never shows a test ad (an empty unit id = no ad).
  */
 import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
@@ -34,7 +34,7 @@ import { useApp } from './store';
 import { font, useTheme } from './theme';
 
 const prod = PROD_AD_UNITS.android;
-const test = (real: string, t: string) => (__DEV__ || !real ? t : real);
+const test = (real: string, t: string) => (__DEV__ ? t : real);
 const AD_UNITS = {
   appOpen: test(prod.appOpen, TestIds.APP_OPEN),
   banner: test(prod.banner, TestIds.ADAPTIVE_BANNER),
@@ -151,23 +151,41 @@ export function adOnApply(then: () => void) {
 
 // ---------------------------------------------------------------- 5. banner
 
-export function BottomBanner() {
+/**
+ * Banners take NO space until an ad has really loaded (no empty white strip), and then exactly the ad's
+ * own height. The BannerAd must stay mounted to load, so it sits in a 0-height box until onAdLoaded.
+ */
+function useBannerBox() {
+  const [h, setH] = useState(0);
   const [failed, setFailed] = useState(false);
-  if (failed) return null;
+  return {
+    failed,
+    box: h ? { height: h } : { height: 0, overflow: 'hidden' as const },
+    onAdLoaded: (d: { height?: number } | undefined) => setH(Math.max(1, Math.round(d?.height ?? 60))),
+    onAdFailedToLoad: () => setFailed(true),
+  };
+}
+
+export function BottomBanner() {
+  const b = useBannerBox();
+  const c = useTheme();
+  if (b.failed || !AD_UNITS.banner) return null;
   return (
-    <View style={{ alignItems: 'center', paddingTop: 4 }}>
-      <BannerAd unitId={AD_UNITS.banner} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} onAdFailedToLoad={() => setFailed(true)} />
+    <View style={[{ alignItems: 'center', backgroundColor: c.bg }, b.box]}>
+      <BannerAd unitId={AD_UNITS.banner} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        onAdLoaded={b.onAdLoaded} onAdFailedToLoad={b.onAdFailedToLoad} />
     </View>
   );
 }
 
 /** Medium rectangle inside long screens (job detail, under the description). */
 export function InlineBanner() {
-  const [failed, setFailed] = useState(false);
-  if (failed) return null;
+  const b = useBannerBox();
+  if (b.failed || !AD_UNITS.banner) return null;
   return (
-    <View style={{ alignItems: 'center', marginVertical: 12 }}>
-      <BannerAd unitId={AD_UNITS.banner} size={BannerAdSize.MEDIUM_RECTANGLE} onAdFailedToLoad={() => setFailed(true)} />
+    <View style={[{ alignItems: 'center' }, b.box, b.box.height ? { marginVertical: 12 } : null]}>
+      <BannerAd unitId={AD_UNITS.banner} size={BannerAdSize.MEDIUM_RECTANGLE}
+        onAdLoaded={b.onAdLoaded} onAdFailedToLoad={b.onAdFailedToLoad} />
     </View>
   );
 }
@@ -197,7 +215,7 @@ export function NativeAdCard() {
 
   if (!ad) return null;
   return (
-    <NativeAdView nativeAd={ad} style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
+    <NativeAdView nativeAd={ad} style={[styles.card, { backgroundColor: c.card, borderColor: c.border, shadowColor: c.shadow }]}>
       <View style={styles.row}>
         {ad.icon && (
           <NativeAsset assetType={NativeAssetType.ICON}>
@@ -234,7 +252,9 @@ export function NativeAdCard() {
 }
 
 const styles = StyleSheet.create({
-  card: { marginHorizontal: 16, marginBottom: 12, borderRadius: 16, padding: 14, borderWidth: 1, gap: 8 },
+  // same frame as JobCard so the in-feed ad sits naturally in the list (still clearly marked "Ad")
+  card: { marginHorizontal: 16, marginBottom: 12, borderRadius: 16, padding: 14, borderWidth: 1, gap: 8,
+    shadowOpacity: 0.07, shadowRadius: 10, shadowOffset: { width: 0, height: 3 }, elevation: 2 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   icon: { width: 42, height: 42, borderRadius: 10 },
   badge: { fontFamily: font.semi, fontSize: 10, color: '#1A1300', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, overflow: 'hidden' },

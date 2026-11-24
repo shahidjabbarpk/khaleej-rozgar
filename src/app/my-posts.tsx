@@ -39,7 +39,7 @@ export default function MyPosts() {
         {empty && (
           <>
             <EmptyState icon="briefcase-plus-outline" title={t('myPostsEmpty')} hint="" />
-            <View style={{ marginHorizontal: 16 }}><PrimaryButton label={t('tabPost')} icon="plus" onPress={() => router.replace('/post')} /></View>
+            <View style={{ marginHorizontal: 16 }}><PrimaryButton label={t('tabPost')} icon="plus" onPress={() => router.push('/post')} /></View>
           </>
         )}
         {jobs?.map((j) => (

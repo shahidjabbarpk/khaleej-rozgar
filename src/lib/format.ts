@@ -27,6 +27,17 @@ export function urgency(job: Job, now = Date.now()): Urgency {
   return 'ok';
 }
 
+/** Jobs older than this never show (and the feed drops them): a 223-day-old job is not a live job. */
+export const MAX_JOB_AGE_DAYS = 60;
+
+/** Days since the job was posted (posted date, else the first time we saw it). */
+export function jobAgeDays(job: Job, now = Date.now()): number {
+  const t = job.postedDate ? Date.parse(`${job.postedDate}T00:00:00+03:00`) : Date.parse(job.firstSeen);
+  const first = Date.parse(job.firstSeen);
+  const at = Number.isFinite(t) ? t : first;
+  return Number.isFinite(at) ? Math.max(0, (now - at) / DAY) : 0;
+}
+
 export function isNew(job: Job, now = Date.now()): boolean {
   return now - Date.parse(job.firstSeen) < DAY;
 }

@@ -288,8 +288,19 @@ export async function fetchAllSources(now = new Date().toISOString()): Promise<S
   }));
 }
 
-/** Drop duplicates (same id) keeping the first; newest first. */
+const norm = (x: string | undefined) => (x ?? '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+
+/**
+ * Drop duplicates keeping the first: same id, or the same job posted twice by a company board with tiny
+ * differences (extra space / punctuation / case in the title) - same org + title + country + first city.
+ */
 export function dedupe(jobs: Job[]): Job[] {
   const seen = new Set<string>();
-  return jobs.filter((j) => (seen.has(j.id) ? false : (seen.add(j.id), true)));
+  return jobs.filter((j) => {
+    const sig = `~${norm(j.organization)}|${norm(j.title)}|${j.country}|${norm(j.cities?.[0])}`;
+    if (seen.has(j.id) || seen.has(sig)) return false;
+    seen.add(j.id);
+    seen.add(sig);
+    return true;
+  });
 }

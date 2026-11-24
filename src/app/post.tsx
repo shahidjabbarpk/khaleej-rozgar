@@ -20,7 +20,7 @@ export default function PostChooser() {
       <ScreenHeader title={t('postTitle')} />
       <ScrollView contentContainerStyle={{ padding: 16, gap: 14 }}>
         {items.map((it) => (
-          <Tap key={it.href} onPress={() => router.replace(it.href)} style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
+          <Tap key={it.href} onPress={() => router.push(it.href)} style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
             <View style={[styles.icon, { backgroundColor: it.color }]}><Icon name={it.icon} size={34} color="#fff" /></View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.title, tf('bold'), { color: c.text }]}>{t(it.title)}</Text>

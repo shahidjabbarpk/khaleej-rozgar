@@ -28,6 +28,10 @@ function mlkit(): { tr: Mod; id: IdMod } | null {
 
 export const translationAvailable = () => !!mlkit();
 
+/** App languages that ML Kit can translate into (it has no ml / ne / si / ps models). */
+const MLKIT_TARGETS = new Set(['en', 'ar', 'ur', 'hi', 'bn', 'ta', 'tl']);
+export const mlkitHas = (l: Lang) => MLKIT_TARGETS.has(l);
+
 /** 'ar', 'en', 'ur'… or 'und' when ML Kit isn't sure (Roman Urdu is often 'und' or 'en'). */
 export async function detectLanguage(text: string): Promise<string> {
   const m = mlkit();

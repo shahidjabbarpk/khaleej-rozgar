@@ -9,7 +9,7 @@ import { COUNTRY_META } from '@/lib/places';
 import { useApp } from '@/lib/store';
 import { font, useTheme } from '@/lib/theme';
 import type { Job } from '@/lib/types';
-import { BookmarkButton, CategoryPill, DeadlineBadge, EligibilityTag, Icon, NewBadge, OrgAvatar, Tag, Tap } from './ui';
+import { BookmarkButton, CategoryPill, confirmAction, DeadlineBadge, EligibilityTag, Icon, NewBadge, OrgAvatar, Tag, Tap } from './ui';
 
 function JobCardBase({ job }: { job: Job }) {
   const c = useTheme();
@@ -52,7 +52,9 @@ function JobCardBase({ job }: { job: Job }) {
             {job.verified && <Icon name="check-decagram" size={14} color={c.gold} />}
           </View>
         </View>
-        <BookmarkButton active={saved} onPress={() => jobSaveToggled(job, toggleSave(job))} />
+        <BookmarkButton active={saved} onPress={() => (saved
+          ? confirmAction(t('unsaveConfirm'), t('remove'), t('cancel'), () => jobSaveToggled(job, toggleSave(job)))
+          : jobSaveToggled(job, toggleSave(job)))} />
       </View>
 
       <View style={styles.tags}>

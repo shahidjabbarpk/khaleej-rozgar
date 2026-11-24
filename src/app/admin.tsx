@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { JobCard } from '@/components/JobCard';
 import { ScreenHeader } from '@/components/ScreenHeader';
-import { EmptyState, SectionTitle, Tap, useStatusBar } from '@/components/ui';
+import { confirmAction, EmptyState, SectionTitle, Tap, useStatusBar } from '@/components/ui';
 import { banUser, dismissReport, fetchHidden, fetchReports, moderatePost } from '@/lib/community';
 import { useI18n } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
@@ -39,8 +39,8 @@ export default function Admin() {
             <JobCard job={j} />
             <View style={styles.row}>
               <Btn label={t('restore')} color={c.ok} onPress={() => moderatePost(j.id, 'active').then(load)} />
-              <Btn label={t('delete')} color={c.danger} onPress={() => moderatePost(j.id, 'expired').then(load)} />
-              {!!j.ownerUid && <Btn label={t('ban')} color={c.danger} onPress={() => banUser(j.ownerUid!).then(load)} />}
+              <Btn label={t('delete')} color={c.danger} onPress={() => confirmAction(t('deleteConfirm'), t('delete'), t('cancel'), () => { moderatePost(j.id, 'expired').then(load).catch(() => {}); })} />
+              {!!j.ownerUid && <Btn label={t('ban')} color={c.danger} onPress={() => confirmAction(t('banConfirm'), t('ban'), t('cancel'), () => { banUser(j.ownerUid!).then(load).catch(() => {}); })} />}
             </View>
           </View>
         ))}

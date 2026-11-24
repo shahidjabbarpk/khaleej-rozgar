@@ -3,13 +3,13 @@ import type { Country, Job } from './types';
 export const COUNTRIES: Country[] = ['sa', 'ae', 'qa', 'kw', 'om', 'bh'];
 
 /** Flag emoji are fine inside the app (store icon / title stay flag-free). */
-export const COUNTRY_META: Record<Country, { flag: string; en: string; ar: string; ur: string; hi: string; bn: string }> = {
-  sa: { flag: '🇸🇦', en: 'Saudi Arabia', ar: 'السعودية', ur: 'سعودی عرب', hi: 'सऊदी अरब', bn: 'সৌদি আরব' },
-  ae: { flag: '🇦🇪', en: 'UAE (Dubai)', ar: 'الإمارات', ur: 'یو اے ای (دبئی)', hi: 'यूएई (दुबई)', bn: 'আরব আমিরাত (দুবাই)' },
-  qa: { flag: '🇶🇦', en: 'Qatar', ar: 'قطر', ur: 'قطر', hi: 'क़तर', bn: 'কাতার' },
-  kw: { flag: '🇰🇼', en: 'Kuwait', ar: 'الكويت', ur: 'کویت', hi: 'कुवैत', bn: 'কুয়েত' },
-  om: { flag: '🇴🇲', en: 'Oman', ar: 'عُمان', ur: 'عمان', hi: 'ओमान', bn: 'ওমান' },
-  bh: { flag: '🇧🇭', en: 'Bahrain', ar: 'البحرين', ur: 'بحرین', hi: 'बहरीन', bn: 'বাহরাইন' },
+export const COUNTRY_META: Record<Country, { flag: string; en: string; [lang: string]: string }> = {
+  sa: { flag: '🇸🇦', en: 'Saudi Arabia', ar: 'السعودية', ur: 'سعودی عرب', hi: 'सऊदी अरब', bn: 'সৌদি আরব', ne: 'साउदी अरब', ml: 'സൗദി അറേബ്യ', ta: 'சவுதி அரேபியா', si: 'සෞදි අරාබිය', ps: 'سعودي عربستان', tl: 'Saudi Arabia' },
+  ae: { flag: '🇦🇪', en: 'UAE (Dubai)', ar: 'الإمارات', ur: 'یو اے ای (دبئی)', hi: 'यूएई (दुबई)', bn: 'আরব আমিরাত (দুবাই)', ne: 'यूएई (दुबई)', ml: 'യുഎഇ (ദുബായ്)', ta: 'ஐக்கிய அரபு அமீரகம் (துபாய்)', si: 'එක්සත් අරාබි එමිරේට්ස් (ඩුබායි)', ps: 'متحده عربي امارات (دبۍ)', tl: 'UAE (Dubai)' },
+  qa: { flag: '🇶🇦', en: 'Qatar', ar: 'قطر', ur: 'قطر', hi: 'क़तर', bn: 'কাতার', ne: 'कतार', ml: 'ഖത്തർ', ta: 'கத்தார்', si: 'කටාර්', ps: 'قطر', tl: 'Qatar' },
+  kw: { flag: '🇰🇼', en: 'Kuwait', ar: 'الكويت', ur: 'کویت', hi: 'कुवैत', bn: 'কুয়েত', ne: 'कुवेत', ml: 'കുവൈത്ത്', ta: 'குவைத்', si: 'කුවේට්', ps: 'کويټ', tl: 'Kuwait' },
+  om: { flag: '🇴🇲', en: 'Oman', ar: 'عُمان', ur: 'عمان', hi: 'ओमान', bn: 'ওমান', ne: 'ओमान', ml: 'ഒമാൻ', ta: 'ஓமான்', si: 'ඕමානය', ps: 'عمان', tl: 'Oman' },
+  bh: { flag: '🇧🇭', en: 'Bahrain', ar: 'البحرين', ur: 'بحرین', hi: 'बहरीन', bn: 'বাহরাইন', ne: 'बहराइन', ml: 'ബഹ്റൈൻ', ta: 'பஹ்ரைன்', si: 'බහරේන්', ps: 'بحرين', tl: 'Bahrain' },
 };
 
 export const CITIES: Record<Country, string[]> = {

@@ -93,4 +93,10 @@ export const font = {
   hindiBold: 'NotoSansDevanagari_700Bold',
   bangla: 'NotoSansBengali_400Regular',
   banglaBold: 'NotoSansBengali_700Bold',
+  malayalam: 'NotoSansMalayalam_400Regular',
+  malayalamBold: 'NotoSansMalayalam_700Bold',
+  tamil: 'NotoSansTamil_400Regular',
+  tamilBold: 'NotoSansTamil_700Bold',
+  sinhala: 'NotoSansSinhala_400Regular',
+  sinhalaBold: 'NotoSansSinhala_700Bold',
 };

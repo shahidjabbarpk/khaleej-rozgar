@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { View } from 'react-native';
 import { JobList } from '@/components/JobList';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -11,7 +12,9 @@ export default function Saved() {
   useStatusBar('plain');
   const c = useTheme();
   const { t } = useI18n();
-  const saved = useApp((s) => Object.values(s.saved));
+  // select the stable map, not Object.values (a new array per read loops zustand v5 -> crash)
+  const savedMap = useApp((s) => s.saved);
+  const saved = useMemo(() => Object.values(savedMap).filter((j) => j && j.id && j.title), [savedMap]);
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <ScreenHeader title={t('savedJobs')} />

@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from 'expo-router';
 import { setStatusBarStyle } from 'expo-status-bar';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
-import { Pressable, type PressableProps, RefreshControl, type StyleProp, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { Alert, Pressable, type PressableProps, RefreshControl, type StyleProp, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { daysLeft, initials, urgency } from '@/lib/format';
@@ -369,4 +369,12 @@ export function useTabBarSpace() {
 /** Safe-area bottom inset for the docked tab bar. */
 export function useBottomInset() {
   return Math.max(useSafeAreaInsets().bottom, 6);
+}
+
+/** Ask before every delete / remove (Shahid's rule). `ok` runs only after the user confirms. */
+export function confirmAction(title: string, okLabel: string, cancelLabel: string, ok: () => void, message = '') {
+  Alert.alert(title, message, [
+    { text: cancelLabel, style: 'cancel' },
+    { text: okLabel, style: 'destructive', onPress: ok },
+  ]);
 }

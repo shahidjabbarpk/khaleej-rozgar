@@ -3,6 +3,9 @@ import { NotoNaskhArabic_400Regular, NotoNaskhArabic_700Bold } from '@expo-googl
 import { NotoNastaliqUrdu_400Regular, NotoNastaliqUrdu_700Bold } from '@expo-google-fonts/noto-nastaliq-urdu';
 import { NotoSansBengali_400Regular, NotoSansBengali_700Bold } from '@expo-google-fonts/noto-sans-bengali';
 import { NotoSansDevanagari_400Regular, NotoSansDevanagari_700Bold } from '@expo-google-fonts/noto-sans-devanagari';
+import { NotoSansMalayalam_400Regular, NotoSansMalayalam_700Bold } from '@expo-google-fonts/noto-sans-malayalam';
+import { NotoSansSinhala_400Regular, NotoSansSinhala_700Bold } from '@expo-google-fonts/noto-sans-sinhala';
+import { NotoSansTamil_400Regular, NotoSansTamil_700Bold } from '@expo-google-fonts/noto-sans-tamil';
 import { Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold, Poppins_700Bold, useFonts } from '@expo-google-fonts/poppins';
 import * as Notifications from 'expo-notifications';
 import { router, Stack, useSegments } from 'expo-router';
@@ -10,7 +13,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { markOpenedFromNotification, startAds } from '@/lib/ads';
 import { startAppCheck } from '@/lib/appcheck';
@@ -18,7 +21,7 @@ import { track } from '@/lib/analytics';
 import { registerBackgroundDetector } from '@/lib/background';
 import { isAdmin } from '@/lib/community';
 import { refreshJobs } from '@/lib/feed';
-import { syncDirection } from '@/lib/i18n';
+import { deviceLang, isRtlLang, syncDirection } from '@/lib/i18n';
 import { setupNotifications } from '@/lib/notify';
 import { listenForegroundPushes, registerBackgroundPushHandler, syncTopics } from '@/lib/push';
 import { useApp, waitForHydration } from '@/lib/store';
@@ -79,6 +82,9 @@ export default function RootLayout() {
     NotoNaskhArabic_400Regular, NotoNaskhArabic_700Bold,
     NotoSansDevanagari_400Regular, NotoSansDevanagari_700Bold,
     NotoSansBengali_400Regular, NotoSansBengali_700Bold,
+    NotoSansMalayalam_400Regular, NotoSansMalayalam_700Bold,
+    NotoSansTamil_400Regular, NotoSansTamil_700Bold,
+    NotoSansSinhala_400Regular, NotoSansSinhala_700Bold,
   });
   useNotificationTaps();
 
@@ -91,12 +97,15 @@ export default function RootLayout() {
 
   const [hydrated, setHydrated] = useState(useApp.persist.hasHydrated());
   const onboarded = useApp((s) => s.onboarded);
+  const rtl = useApp((s) => isRtlLang(s.lang));
   const segments = useSegments();
 
   useEffect(() => {
     waitForHydration().then(() => {
       const s = useApp.getState();
-      syncDirection(s.lang);
+      syncDirection();
+      // very first start: use the phone's language when the app has it (user can change it in onboarding)
+      if (!s.onboarded && s.launches === 0) s.set({ lang: deviceLang() });
       s.set({ launches: s.launches + 1 });
       setHydrated(true);
       refreshJobs().catch(() => {});
@@ -121,6 +130,8 @@ export default function RootLayout() {
   if (!ready) return null;
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: c.bg }}>
+      {/* the whole app's layout direction: switching language re-renders at once, no restart */}
+      <View style={{ flex: 1, direction: rtl ? 'rtl' : 'ltr' }}>
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg }, animation: 'slide_from_right' }}>
         <Stack.Screen name="(tabs)" />
@@ -136,6 +147,7 @@ export default function RootLayout() {
         <Stack.Screen name="info" />
         <Stack.Screen name="verify" />
       </Stack>
+      </View>
     </GestureHandlerRootView>
   );
 }

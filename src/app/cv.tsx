@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Field } from '@/components/community';
-import { Icon, Tap, useStatusBar } from '@/components/ui';
+import { confirmAction, Icon, Tap, useStatusBar } from '@/components/ui';
 import { track } from '@/lib/analytics';
 import { type CvData, type CvRow, EMPTY_CV, exportCv, validateCv } from '@/lib/cv';
 import { useI18n } from '@/lib/i18n';
@@ -43,7 +43,8 @@ export default function CvBuilder() {
   const setRow = (list: List, i: number, k: keyof CvRow, v: string) =>
     setCv((p) => ({ ...p, [list]: (p[list] ?? []).map((r, j) => (j === i ? { ...r, [k]: v } : r)) }));
   const addRow = (list: List) => setCv((p) => ({ ...p, [list]: [...(p[list] ?? []), { a: '', b: '', c: '' }] }));
-  const delRow = (list: List, i: number) => setCv((p) => ({ ...p, [list]: (p[list] ?? []).filter((_, j) => j !== i) }));
+  const delRow = (list: List, i: number) => confirmAction(t('removeConfirm'), t('remove'), t('cancel'),
+    () => setCv((p) => ({ ...p, [list]: (p[list] ?? []).filter((_, j) => j !== i) })));
 
   // optional passport-style photo: square crop, shrunk to 300px so the saved draft stays small
   const pickPhoto = async () => {
@@ -109,7 +110,7 @@ export default function CvBuilder() {
               <Text style={[tf('bold'), { color: c.text, fontSize: 14 }]}>{t('cvPhoto')}</Text>
               <Text style={[tf(), { color: c.sub, fontSize: 12 }]}>{t('cvPhotoHint')}</Text>
               {!!cv.photo && (
-                <Tap onPress={() => setCv((p) => ({ ...p, photo: undefined }))} haptic={false}>
+                <Tap onPress={() => confirmAction(t('removeConfirm'), t('remove'), t('cancel'), () => setCv((p) => ({ ...p, photo: undefined })))} haptic={false}>
                   <Text style={[tf('bold'), { color: c.danger, fontSize: 12.5 }]}>{t('remove')}</Text>
                 </Tap>
               )}

@@ -46,7 +46,8 @@ async function afterLogin(name: string | null) {
 export function AuthCard({ onDone, title, style }: { onDone?: () => void; title?: string; style?: ViewStyle }) {
   const c = useTheme();
   const { t, tf } = useI18n();
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
+  const [resetTo, setResetTo] = useState<string | null>(null); // email the reset link went to
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [show, setShow] = useState(false);
@@ -86,18 +87,55 @@ export function AuthCard({ onDone, title, style }: { onDone?: () => void; title?
     }
   };
 
+  // Forgot password = its own small step: only the email, then a clear "link sent" panel.
   const forgot = async () => {
-    if (!/^\S+@\S+\.\S+$/.test(email.trim())) { setErr(t('authBadEmail')); return; }
+    const e = email.trim();
+    if (!e.includes('@') || !e.split('@')[1]?.includes('.')) { setErr(t('authBadEmail')); return; }
     setBusy('reset'); setErr(null);
     try {
-      await resetPassword(email);
-      setNote(t('authResetSent'));
-    } catch (e) {
-      fail(e);
+      await resetPassword(e);
+      setResetTo(e);
+    } catch (x: any) {
+      // never tell strangers whether an email has an account: "not found" also shows "sent"
+      if (x?.code === 'auth/user-not-found') setResetTo(e);
+      else fail(x);
     } finally {
       setBusy(null);
     }
   };
+  const backToLogin = () => { setMode('login'); setResetTo(null); setErr(null); setNote(null); };
+
+  if (mode === 'reset') {
+    const inputR = [styles.input, { backgroundColor: c.cardAlt, color: c.text, borderColor: c.border }];
+    return (
+      <Animated.View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }, style]}>
+        <View style={[styles.badge, { backgroundColor: c.primarySoft }]}>
+          <Icon name={resetTo ? 'email-check-outline' : 'lock-reset'} size={26} color={c.primary} />
+        </View>
+        <Text style={[styles.title, tf('bold'), { color: c.text }]}>{t(resetTo ? 'authResetDoneTitle' : 'authResetTitle')}</Text>
+        {resetTo ? (
+          <>
+            <Text style={[tf(), styles.hint, { color: c.sub }]}>{t('authResetSent')}</Text>
+            <Text style={[tf('bold'), { color: c.text, textAlign: 'center', marginBottom: 16 }]}>{resetTo}</Text>
+          </>
+        ) : (
+          <>
+            <Text style={[tf(), styles.hint, { color: c.sub }]}>{t('authResetHint')}</Text>
+            <TextInput value={email} onChangeText={setEmail} placeholder={t('authEmail')} placeholderTextColor={c.faint} autoFocus
+              autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress"
+              onSubmitEditing={forgot} style={inputR} />
+            {err && <Animated.Text style={[styles.msg, { color: c.danger }]}>{err}</Animated.Text>}
+            <Tap onPress={forgot} disabled={!!busy} style={[styles.btn, { backgroundColor: c.primary }]}>
+              {busy === 'reset' ? <ActivityIndicator color="#fff" /> : <Text style={[tf('bold'), styles.btnText]}>{t('authResetSend')}</Text>}
+            </Tap>
+          </>
+        )}
+        <Tap onPress={backToLogin} style={styles.forgot}>
+          <Text style={[tf('bold'), { color: c.primary, fontSize: 13.5 }]}>{t('authBackToLogin')}</Text>
+        </Tap>
+      </Animated.View>
+    );
+  }
 
   const input = [styles.input, { backgroundColor: c.cardAlt, color: c.text, borderColor: c.border }];
   return (
@@ -159,8 +197,8 @@ export function AuthCard({ onDone, title, style }: { onDone?: () => void; title?
         )}
       </Tap>
       {mode === 'login' && (
-        <Tap onPress={forgot} disabled={!!busy} style={styles.forgot}>
-          <Text style={[tf(), { color: c.primary, fontSize: 13 }]}>{busy === 'reset' ? '…' : t('authForgot')}</Text>
+        <Tap onPress={() => { setMode('reset'); setErr(null); setNote(null); }} disabled={!!busy} style={styles.forgot}>
+          <Text style={[tf(), { color: c.primary, fontSize: 13 }]}>{t('authForgot')}</Text>
         </Tap>
       )}
     </Animated.View>

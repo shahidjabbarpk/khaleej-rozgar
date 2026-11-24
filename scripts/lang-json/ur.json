@@ -1,0 +1,10 @@
+{
+"greetMorning":"صبح بخیر","greetAfternoon":"سلام","greetEvening":"شام بخیر","govtCount":"سرکاری","latestJobs":"تازہ نوکریاں","updated":"اپڈیٹ","loadMore":"مزید دکھائیں","sortNewest":"نئی پہلے","sortDeadline":"آخری تاریخ",
+"myJobTypes":"میری پسند کی نوکریاں","allJobs":"تمام نوکریاں","postedWithin":"کب لگی","ageAny":"پچھلے 60 دن","age.1":"آج","age.3":"پچھلے 3 دن","age.7":"پچھلے 7 دن","age.30":"پچھلے 30 دن",
+"whatsapp":"واٹس ایپ","workersTitle":"کام ڈھونڈنے والے لوگ","postDone":"آپ کی پوسٹ 30 دن کے لیے لگ گئی ہے۔","officialLink":"سرکاری لنک (سرکاری نوکری کے لیے ضروری)","govtPostToggle":"یہ سرکاری نوکری ہے (ایڈمن)",
+"chooseCategoriesHint":"ایک یا زیادہ چنیں۔ یہ نوکریاں ہوم پر پہلے آئیں گی۔ باقی سب \"تمام نوکریاں\" میں رہیں گی۔","admin":"ایڈمن",
+"authResetTitle":"پاس ورڈ دوبارہ بنائیں","authResetHint":"وہ ای میل لکھیں جس سے اکاؤنٹ بنایا تھا۔ ہم نیا پاس ورڈ بنانے کا لنک بھیجیں گے۔","authResetSend":"ری سیٹ لنک بھیجیں","authResetDoneTitle":"اپنی ای میل دیکھیں","authBackToLogin":"واپس لاگ ان پر",
+"authResetSent":"اس ای میل پر پاس ورڈ ری سیٹ لنک بھیج دیا ہے۔ اسے کھول کر نیا پاس ورڈ بنائیں۔ اسپیم فولڈر بھی دیکھیں۔",
+"adminTitle":"نگرانی","hiddenPosts":"چھپی ہوئی پوسٹس","reports":"رپورٹس","restore":"واپس لائیں","ban":"یوزر بین کریں","dismiss":"ہٹائیں","nothingHere":"یہاں کچھ نہیں",
+"removeConfirm":"کیا اسے ہٹانا ہے؟","unsaveConfirm":"کیا یہ نوکری محفوظ لسٹ سے ہٹانی ہے؟","deletePacksConfirm":"ڈاؤن لوڈ کیے ترجمہ پیک ڈیلیٹ کریں؟","logoutConfirm":"کیا اکاؤنٹ سے لاگ آؤٹ کرنا ہے؟","banConfirm":"اس یوزر کو بین کریں؟ یہ دوبارہ پوسٹ نہیں کر سکے گا۔"
+}

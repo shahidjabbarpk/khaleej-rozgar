@@ -43,8 +43,13 @@ export default function Onboarding() {
     router.replace('/');
   };
 
-  const toggleCat = (k: Category) =>
-    s.set({ alertCategories: s.alertCategories.includes(k) ? s.alertCategories.filter((x) => x !== k) : [...s.alertCategories, k] });
+  // everything is on by default: the first tap picks just that type, later taps add/remove more.
+  // These types are the user's Home jobs ("My job types"); "All jobs" still shows the rest.
+  const toggleCat = (k: Category) => {
+    const cur = s.alertCategories;
+    if (cur.length === ALL_CATEGORIES.length) return s.set({ alertCategories: [k] });
+    s.set({ alertCategories: cur.includes(k) ? cur.filter((x) => x !== k) : [...cur, k] });
+  };
 
   return (
     <LinearGradient colors={[c.heroA, c.heroB, c.heroC]} style={{ flex: 1 }}>
@@ -99,10 +104,11 @@ export default function Onboarding() {
         {step === 1 && (
           <>
             <Text style={[styles.h1, tf('bold')]}>{t('chooseCategories')}</Text>
+            <Text style={[styles.sub, tf()]}>{t('chooseCategoriesHint')}</Text>
             <View style={[styles.card, { backgroundColor: c.card }]}>
               <View style={styles.cats}>
                 {ALL_CATEGORIES.map((k) => {
-                  const on = s.alertCategories.includes(k);
+                  const on = s.alertCategories.length < ALL_CATEGORIES.length && s.alertCategories.includes(k);
                   const col = CATEGORY_META[k].colors[0];
                   return (
                     <Tap key={k} onPress={() => toggleCat(k)}
@@ -158,6 +164,7 @@ const styles = StyleSheet.create({
   dots: { flexDirection: 'row', gap: 6, alignSelf: 'center', marginBottom: 22 },
   dot: { width: 28, height: 5, borderRadius: 3 },
   h1: { color: '#fff', fontSize: 25, marginBottom: 6 },
+  sub: { color: 'rgba(255,255,255,0.85)', fontSize: 14, marginBottom: 14, lineHeight: 20 },
   p: { color: 'rgba(255,255,255,0.85)', fontSize: 15, marginBottom: 18, lineHeight: 22 },
   card: { borderRadius: 22, padding: 16 },
   label: { fontSize: 13, marginBottom: 8 },

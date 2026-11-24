@@ -1,20 +1,27 @@
 /**
- * App languages: English (default after install), Arabic, Urdu, Hindi, Bangla.
- * The app never switches by itself - the user picks a language in Settings (or onboarding).
- * Arabic + Urdu are right-to-left: switching to/from them restarts the app once (I18nManager).
- * Strings are in lang/*.ts; a missing key falls back to English.
+ * App languages: English + the languages of the people who work in the Gulf.
+ * First launch: the phone's own language when the app has it, otherwise English. The user can change it
+ * in onboarding or Settings. A switch is instant: NO app restart. Right-to-left languages (Arabic, Urdu,
+ * Pashto) are laid out RTL by the root View's `direction` style (see _layout.tsx), not I18nManager, so
+ * nothing has to reload. Strings are in lang/*.ts; a missing key falls back to English.
  */
 import { useCallback } from 'react';
-import { DevSettings, I18nManager, Platform } from 'react-native';
+import { I18nManager, Platform } from 'react-native';
 import { ar } from './lang/ar';
 import { bn } from './lang/bn';
 import { en, type Key } from './lang/en';
 import { hi } from './lang/hi';
+import { ml } from './lang/ml';
+import { ne } from './lang/ne';
+import { ps } from './lang/ps';
+import { si } from './lang/si';
+import { ta } from './lang/ta';
+import { tl } from './lang/tl';
 import { ur } from './lang/ur';
 import { useApp } from './store';
 import { font } from './theme';
 
-export type Lang = 'en' | 'ar' | 'ur' | 'hi' | 'bn';
+export type Lang = 'en' | 'ar' | 'ur' | 'hi' | 'bn' | 'ne' | 'ml' | 'ta' | 'si' | 'ps' | 'tl';
 export type { Key };
 
 export const LANGS: { code: Lang; label: string }[] = [
@@ -23,44 +30,52 @@ export const LANGS: { code: Lang; label: string }[] = [
   { code: 'ur', label: 'اردو' },
   { code: 'hi', label: 'हिन्दी' },
   { code: 'bn', label: 'বাংলা' },
+  { code: 'ml', label: 'മലയാളം' },
+  { code: 'ta', label: 'தமிழ்' },
+  { code: 'ne', label: 'नेपाली' },
+  { code: 'si', label: 'සිංහල' },
+  { code: 'ps', label: 'پښتو' },
+  { code: 'tl', label: 'Tagalog / Filipino' },
 ];
 
-const dicts: Record<Lang, Partial<Record<Key, string>>> = { en, ar, ur, hi, bn };
+const dicts: Record<Lang, Partial<Record<Key, string>>> = { en, ar, ur, hi, bn, ne, ml, ta, si, ps, tl };
 
-export const isRtlLang = (l: Lang) => l === 'ar' || l === 'ur';
+export const isRtlLang = (l: Lang) => l === 'ar' || l === 'ur' || l === 'ps';
+
+/** The phone's language if the app has it (Filipino = Tagalog), else English. Used on first launch only. */
+export function deviceLang(): Lang {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getLocales } = require('expo-localization') as typeof import('expo-localization');
+    for (const l of getLocales()) {
+      const code = (l.languageCode ?? '').toLowerCase();
+      const c = (code === 'fil' ? 'tl' : code) as Lang;
+      if (c in dicts) return c;
+    }
+  } catch {}
+  return 'en';
+}
 
 /** Translate outside React (background task, notifications). */
 export function translate(lang: Lang, key: Key): string {
   return dicts[lang]?.[key] ?? en[key];
 }
 
-/** Applies a language. Returns true when the app must restart for the RTL/LTR switch. */
-export function applyLanguage(lang: Lang): boolean {
+/** Applies a language at once (no restart). */
+export function applyLanguage(lang: Lang) {
   useApp.getState().set({ lang });
-  const rtl = isRtlLang(lang);
-  if (Platform.OS === 'web' || I18nManager.isRTL === rtl) return false;
-  I18nManager.allowRTL(rtl);
-  I18nManager.forceRTL(rtl);
-  // layout direction only changes after a JS reload; the reload is not a real app open, so no App Open ad
-  useApp.getState().set({ selfRestartAt: Date.now() });
-  setTimeout(() => {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require('react-native-restart').default.restart();
-    } catch {
-      DevSettings.reload();
-    }
-  }, 900);
-  return true;
 }
 
-/** Keeps the native layout direction in sync with the saved language (call once on launch). */
-export function syncDirection(lang: Lang) {
+/**
+ * v1.0.0 flipped the whole app with I18nManager.forceRTL + a restart. Undo that once so the native side is
+ * always LTR and the root View decides the direction (takes effect on the next start; until then the
+ * explicit root `direction` still wins).
+ */
+export function syncDirection() {
   if (Platform.OS === 'web') return;
-  const rtl = isRtlLang(lang);
-  if (I18nManager.isRTL !== rtl) {
-    I18nManager.allowRTL(rtl);
-    I18nManager.forceRTL(rtl);
+  if (I18nManager.isRTL) {
+    I18nManager.allowRTL(false);
+    I18nManager.forceRTL(false);
   }
 }
 
@@ -70,6 +85,11 @@ function fontsFor(lang: Lang) {
     case 'ar': return [font.arabic, font.arabicBold];
     case 'hi': return [font.hindi, font.hindiBold];
     case 'bn': return [font.bangla, font.banglaBold];
+    case 'ne': return [font.hindi, font.hindiBold];
+    case 'ps': return [font.arabic, font.arabicBold];
+    case 'ml': return [font.malayalam, font.malayalamBold];
+    case 'ta': return [font.tamil, font.tamilBold];
+    case 'si': return [font.sinhala, font.sinhalaBold];
     default: return [font.regular, font.semi];
   }
 }
@@ -86,7 +106,6 @@ export function useI18n() {
     /** text style for UI strings in the current language (job titles from sources keep Poppins) */
     tf: (weight: 'regular' | 'bold' = 'regular') => ({
       fontFamily: weight === 'bold' ? bold : reg,
-      // RN flips start/end itself once I18nManager is RTL; only the writing direction is set here
       ...(rtl ? { writingDirection: 'rtl' as const } : null),
     }),
   };

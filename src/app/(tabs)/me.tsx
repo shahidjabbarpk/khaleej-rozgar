@@ -6,7 +6,7 @@ import { AuthCard, isLoggedIn, useAuthUser } from '@/components/AuthCard';
 import { Dropdown } from '@/components/Dropdown';
 import { Hero } from '@/components/Header';
 import { LinkRow, SwitchRow } from '@/components/SwitchRow';
-import { SectionTitle, useStatusBar } from '@/components/ui';
+import { confirmAction, SectionTitle, useStatusBar } from '@/components/ui';
 import { BottomBanner } from '@/lib/ads';
 import { communityReady, deleteAccount, signOutUser } from '@/lib/community';
 import { PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config';
@@ -50,7 +50,7 @@ export default function Me() {
           <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
             <LinkRow icon="briefcase-account" label={t('myPosts')} onPress={() => router.push('/my-posts')} />
             {s.role === 'employer' && <LinkRow icon="check-decagram" label={t('verifyEmployer')} onPress={() => router.push('/verify')} />}
-            {isLoggedIn(user) && <LinkRow icon="logout" label={t('logout')} onPress={() => signOutUser().catch(() => {})} />}
+            {isLoggedIn(user) && <LinkRow icon="logout" label={t('logout')} onPress={() => confirmAction(t('logoutConfirm'), t('logout'), t('cancel'), () => { signOutUser().catch(() => {}); })} />}
           </View>
         )}
 
@@ -90,7 +90,7 @@ export default function Me() {
         <SectionTitle title={t('translationPacks')} />
         <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
           <SwitchRow icon="signal-cellular-3" label={t('translationMobileData')} value={s.translateOnMobile} onChange={(v) => s.set({ translateOnMobile: v })} />
-          <LinkRow icon="delete-outline" label={t('deletePacks')} onPress={() => forgetPacks().then(() => Alert.alert(t('packsDeleted')))} />
+          <LinkRow icon="delete-outline" label={t('deletePacks')} onPress={() => confirmAction(t('deletePacksConfirm'), t('delete'), t('cancel'), () => { forgetPacks().then(() => Alert.alert(t('packsDeleted'))).catch(() => {}); })} />
           <SwitchRow icon="weather-night" label={t('darkMode')} value={s.theme === 'dark'} onChange={(v) => s.set({ theme: v ? 'dark' : 'light' })} />
         </View>
 

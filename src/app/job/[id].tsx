@@ -2,11 +2,11 @@ import * as Clipboard from 'expo-clipboard';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, I18nManager, Linking, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ReportSheet } from '@/components/community';
 import {
-  BookmarkButton, CategoryPill, DeadlineBadge, EligibilityTag, EmptyState, Icon, type IconName, OrgAvatar, Tap, useStatusBar,
+  BookmarkButton, CategoryPill, confirmAction, DeadlineBadge, EligibilityTag, EmptyState, Icon, type IconName, OrgAvatar, Tap, useStatusBar,
 } from '@/components/ui';
 import { adOnApply, InlineBanner } from '@/lib/ads';
 import { track } from '@/lib/analytics';
@@ -18,14 +18,14 @@ import { scheduleDeadlineReminder } from '@/lib/notify';
 import { COUNTRY_META, countryName } from '@/lib/places';
 import { useApp } from '@/lib/store';
 import { font, useTheme } from '@/lib/theme';
-import { detectLanguage, hasPacks, onWifi, translateText, translationAvailable } from '@/lib/translate';
+import { detectLanguage, hasPacks, mlkitHas, onWifi, translateText, translationAvailable } from '@/lib/translate';
 import type { Job } from '@/lib/types';
 
 export default function JobDetail() {
   useStatusBar('plain');
   const { id } = useLocalSearchParams<{ id: string }>();
   const c = useTheme();
-  const { t, tf, lang } = useI18n();
+  const { t, tf, lang, isRtl } = useI18n();
   const insets = useSafeAreaInsets();
   const job = useApp((s) => s.jobs.find((j) => j.id === id) ?? s.saved[id ?? '']);
   const saved = useApp((s) => !!(id && s.saved[id]));
@@ -75,11 +75,13 @@ export default function JobDetail() {
     <View style={[styles.screen, { backgroundColor: c.bg }]}>
       <View style={[styles.top, { paddingTop: insets.top + 6, backgroundColor: c.card, borderBottomColor: c.border }]}>
         <Tap onPress={() => router.back()} style={styles.iconBtn} accessibilityLabel={t('back')}>
-          <Icon name={I18nManager.isRTL ? 'arrow-right' : 'arrow-left'} size={24} color={c.text} />
+          <Icon name={isRtl ? 'arrow-right' : 'arrow-left'} size={24} color={c.text} />
         </Tap>
         <Text style={[styles.topTitle, tf('bold'), { color: c.text }]} numberOfLines={1}>{t('jobDetails')}</Text>
         <Tap onPress={share} style={styles.iconBtn} accessibilityLabel={t('share')}><Icon name="share-variant" size={22} color={c.text} /></Tap>
-        <BookmarkButton active={saved} onPress={() => jobSaveToggled(job, toggleSave(job))} />
+        <BookmarkButton active={saved} onPress={() => (saved
+          ? confirmAction(t('unsaveConfirm'), t('remove'), t('cancel'), () => jobSaveToggled(job, toggleSave(job)))
+          : jobSaveToggled(job, toggleSave(job)))} />
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 130 }}>
@@ -238,7 +240,8 @@ function Description({ job }: { job: Job }) {
     if (translationAvailable()) detectLanguage(text).then(setSrc).catch(() => {});
   }, [text]);
 
-  const canTranslate = translationAvailable() && src !== lang;
+  // ML Kit has no Malayalam, Nepali, Sinhala or Pashto pack: those users get no translate button
+  const canTranslate = translationAvailable() && mlkitHas(lang) && src !== lang;
   const run = async (sourceLang: string) => {
     setBusy(true);
     try {
