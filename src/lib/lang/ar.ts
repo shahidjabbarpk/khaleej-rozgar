@@ -336,4 +336,7 @@ export const ar: Partial<Record<Key, string>> = {
   deletePacksConfirm: 'حذف حزم الترجمة المحمّلة؟',
   logoutConfirm: 'تسجيل الخروج من حسابك؟',
   banConfirm: 'حظر هذا المستخدم؟ لن يتمكن من النشر مرة أخرى.',
+  noMyJobs: 'لا توجد وظائف في الأنواع التي اخترتها حالياً',
+  noMyJobsHint: 'تصل وظائف جديدة كل ساعة. حتى ذلك الحين، شاهد كل الوظائف في دولتك.',
+  seeAllJobs: 'عرض كل الوظائف',
 };

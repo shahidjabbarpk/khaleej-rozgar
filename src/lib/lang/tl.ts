@@ -336,4 +336,7 @@ export const tl: Partial<Record<Key, string>> = {
   errorGeneric: 'May nangyaring mali. Tingnan ang internet at subukan ulit.',
   loading: 'Naglo-load…',
   retry: 'Subukan ulit',
+  noMyJobs: 'Wala pang trabaho sa mga napili mong uri',
+  noMyJobsHint: 'May bagong trabaho bawat oras. Habang naghihintay, tingnan ang lahat ng trabaho sa bansa mo.',
+  seeAllJobs: 'Tingnan lahat ng trabaho',
 };

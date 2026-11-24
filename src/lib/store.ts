@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import seed from '../data/seed.json';
+import { isStale } from './format';
 import { Storage } from './kv';
 import type { Lang } from './i18n';
 import type { AlertItem, Category, Country, Feed, Job, Profile } from './types';
@@ -49,7 +50,9 @@ interface AppState {
   set: (patch: Partial<AppState>) => void;
 }
 
-const seedFeed = seed as unknown as Feed;
+const rawSeed = seed as unknown as Feed;
+// old jobs never show anywhere (Jobs, Govt, Alerts): drop them from the seed and every fresh feed
+const seedFeed: Feed = { ...rawSeed, jobs: rawSeed.jobs.filter((j) => !isStale(j)) };
 
 export const useApp = create<AppState>()(
   persist(
@@ -85,7 +88,8 @@ export const useApp = create<AppState>()(
       savesTotal: 0,
       reviewAskedAt: null,
 
-      ingest: (feed) => {
+      ingest: (rawFeed) => {
+        const feed = { ...rawFeed, jobs: rawFeed.jobs.filter((j) => !isStale(j)) };
         const seen = new Set(get().seenIds);
         const fresh = feed.jobs.filter((j) => !seen.has(j.id));
         const saved = { ...get().saved };

@@ -75,7 +75,7 @@ export default function JobDetail() {
     <View style={[styles.screen, { backgroundColor: c.bg }]}>
       <View style={[styles.top, { paddingTop: insets.top + 6, backgroundColor: c.card, borderBottomColor: c.border }]}>
         <Tap onPress={() => router.back()} style={styles.iconBtn} accessibilityLabel={t('back')}>
-          <Icon name={isRtl ? 'arrow-right' : 'arrow-left'} size={24} color={c.text} />
+          <Icon name="arrow-left" size={24} color={c.text} />
         </Tap>
         <Text style={[styles.topTitle, tf('bold'), { color: c.text }]} numberOfLines={1}>{t('jobDetails')}</Text>
         <Tap onPress={share} style={styles.iconBtn} accessibilityLabel={t('share')}><Icon name="share-variant" size={22} color={c.text} /></Tap>

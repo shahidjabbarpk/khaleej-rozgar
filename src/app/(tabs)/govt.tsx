@@ -6,7 +6,7 @@ import { JobList } from '@/components/JobList';
 import { EmptyState, Icon, SectionTitle, Tap, useStatusBar } from '@/components/ui';
 import { BottomBanner } from '@/lib/ads';
 import { refreshJobs } from '@/lib/feed';
-import { sortJobs } from '@/lib/format';
+import { isStale, sortJobs } from '@/lib/format';
 import { useI18n } from '@/lib/i18n';
 import { COUNTRY_META, GOVT_PORTALS } from '@/lib/places';
 import { useApp } from '@/lib/store';
@@ -23,7 +23,7 @@ export default function Govt() {
 
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
-    return sortJobs(jobs.filter((j) => j.sector === 'govt' && (!country || j.country === country)
+    return sortJobs(jobs.filter((j) => j.sector === 'govt' && !isStale(j) && (!country || j.country === country)
       && (!s || `${j.title} ${j.organization}`.toLowerCase().includes(s))), 'newest');
   }, [jobs, country, q]);
   const portals = GOVT_PORTALS.filter((p) => !country || p.country === country);

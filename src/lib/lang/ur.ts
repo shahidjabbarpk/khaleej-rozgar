@@ -336,4 +336,7 @@ export const ur: Partial<Record<Key, string>> = {
   deletePacksConfirm: 'ڈاؤن لوڈ کیے ترجمہ پیک ڈیلیٹ کریں؟',
   logoutConfirm: 'کیا اکاؤنٹ سے لاگ آؤٹ کرنا ہے؟',
   banConfirm: 'اس یوزر کو بین کریں؟ یہ دوبارہ پوسٹ نہیں کر سکے گا۔',
+  noMyJobs: 'آپ کی پسند کی نوکریاں ابھی نہیں',
+  noMyJobsHint: 'ہر گھنٹے نئی نوکریاں آتی ہیں۔ تب تک اپنے ملک کی تمام نوکریاں دیکھیں۔',
+  seeAllJobs: 'تمام نوکریاں دیکھیں',
 };

@@ -336,4 +336,7 @@ export const hi: Partial<Record<Key, string>> = {
   deletePacksConfirm: 'डाउनलोड किए अनुवाद पैक डिलीट करें?',
   logoutConfirm: 'क्या अकाउंट से लॉगआउट करना है?',
   banConfirm: 'इस यूज़र को बैन करें? यह दोबारा पोस्ट नहीं कर पाएगा।',
+  noMyJobs: 'आपकी पसंद की नौकरियाँ अभी नहीं हैं',
+  noMyJobsHint: 'हर घंटे नई नौकरियाँ आती हैं। तब तक अपने देश की सभी नौकरियाँ देखें।',
+  seeAllJobs: 'सभी नौकरियाँ देखें',
 };

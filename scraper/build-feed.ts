@@ -9,7 +9,7 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dedupe, fetchAllSources } from '../src/lib/sources.ts';
-import { jobAgeDays, MAX_JOB_AGE_DAYS } from '../src/lib/format.ts';
+import { isStale } from '../src/lib/format.ts';
 import { pushText, topicFor } from '../src/lib/topics.ts';
 import type { Feed, Job } from '../src/lib/types.ts';
 import { sendPush, serviceAccount } from './fcm.ts';
@@ -77,7 +77,7 @@ async function main() {
   const keepOld = prev.jobs.filter((j) => failed.has(j.source) && !jobs.some((n) => n.id === j.id));
   jobs = [...jobs, ...keepOld].map((j) => ({ ...j, firstSeen: known.get(j.id)?.firstSeen ?? now }))
     // old jobs are not live jobs: drop anything posted more than MAX_JOB_AGE_DAYS ago
-    .filter((j) => jobAgeDays(j) <= MAX_JOB_AGE_DAYS);
+    .filter((j) => !isStale(j));
   jobs.sort((a, b) => (b.postedDate ?? b.firstSeen.slice(0, 10)).localeCompare(a.postedDate ?? a.firstSeen.slice(0, 10)));
 
   const fresh = jobs.filter((j) => !known.has(j.id));

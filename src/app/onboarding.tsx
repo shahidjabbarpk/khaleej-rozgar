@@ -93,8 +93,8 @@ export default function Onboarding() {
                 <PrimaryButton label={t('continue')} icon="arrow-right" onPress={() => setStep(1)} />
               </View>
               {!s.country && (
-                <Tap onPress={() => setStep(1)} style={{ alignSelf: 'center', padding: 10 }}>
-                  <Text style={[tf(), { color: c.sub }]}>{t('allGulf')}</Text>
+                <Tap onPress={() => setStep(1)} style={{ alignSelf: 'stretch', padding: 10 }}>
+                  <Text style={[tf(), { color: c.sub, textAlign: 'center', lineHeight: 30 }]}>{t('allGulf')}</Text>
                 </Tap>
               )}
             </View>

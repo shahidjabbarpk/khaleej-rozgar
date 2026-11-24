@@ -38,6 +38,13 @@ export function jobAgeDays(job: Job, now = Date.now()): number {
   return Number.isFinite(at) ? Math.max(0, (now - at) / DAY) : 0;
 }
 
+/** Too old to show: posted more than MAX_JOB_AGE_DAYS ago, unless its last date is still ahead. */
+export function isStale(job: Job, now = Date.now()): boolean {
+  const end = deadlineMs(job);
+  if (end && end >= now) return false;
+  return jobAgeDays(job, now) > MAX_JOB_AGE_DAYS;
+}
+
 export function isNew(job: Job, now = Date.now()): boolean {
   return now - Date.parse(job.firstSeen) < DAY;
 }

@@ -13,7 +13,7 @@ export function ScreenHeader({ title }: { title: string }) {
   return (
     <View style={[styles.bar, { paddingTop: insets.top + 6, backgroundColor: c.card, borderBottomColor: c.border }]}>
       <Tap onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={styles.back} accessibilityLabel={t('back')}>
-        <Icon name={isRtl ? 'arrow-right' : 'arrow-left'} size={24} color={c.text} />
+        <Icon name="arrow-left" size={24} color={c.text} />
       </Tap>
       <Text style={[styles.title, tf('bold'), { color: c.text }]} numberOfLines={1}>{title}</Text>
     </View>

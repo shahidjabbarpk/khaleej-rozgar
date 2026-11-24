@@ -161,7 +161,15 @@ export default function Jobs() {
           loading={syncing && !jobs.length}
           refreshing={syncing}
           onRefresh={() => refreshJobs().catch(() => {})}
-          empty={<EmptyState icon="briefcase-search-outline" title={t('noJobs')} hint={t('noJobsHint')} />}
+          empty={scope === 'mine' && hasMine && !cat ? (
+            // nothing in the picked job types right now: say so and offer all jobs (never a dead end)
+            <EmptyState icon="briefcase-search-outline" title={t('noMyJobs')} hint={t('noMyJobsHint')}
+              action={(
+                <Tap onPress={() => setScope('all')} style={[styles.allBtn, { backgroundColor: c.primary }]}>
+                  <Text style={[tf('bold'), { color: '#fff', fontSize: 15 }]}>{t('seeAllJobs')}</Text>
+                </Tap>
+              )} />
+          ) : <EmptyState icon="briefcase-search-outline" title={t('noJobs')} hint={t('noJobsHint')} />}
         />
       ) : (
         <FlatList
@@ -187,6 +195,7 @@ const styles = StyleSheet.create({
   segBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 44, borderRadius: 11 },
   segText: { fontSize: 14.5 },
   filters: { gap: 8, paddingHorizontal: 16, paddingVertical: 10, alignItems: 'center' },
+  allBtn: { marginTop: 16, paddingHorizontal: 22, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   heroRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   savedBtn: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.16)' },
   badge: { position: 'absolute', top: -3, right: -3, minWidth: 18, height: 18, borderRadius: 9, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },

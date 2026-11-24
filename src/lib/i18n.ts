@@ -107,6 +107,8 @@ export function useI18n() {
     tf: (weight: 'regular' | 'bold' = 'regular') => ({
       fontFamily: weight === 'bold' ? bold : reg,
       ...(rtl ? { writingDirection: 'rtl' as const } : null),
+      // Nastaliq is very tall: a fixed lineHeight made for Latin text cuts the 2nd line, so use the font's own
+      ...(lang === 'ur' ? { lineHeight: undefined, paddingHorizontal: 3 } : null),
     }),
   };
 }

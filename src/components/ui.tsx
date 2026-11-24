@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from 'expo-router';
 import { setStatusBarStyle } from 'expo-status-bar';
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ComponentProps, type ReactNode, useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, type PressableProps, RefreshControl, type StyleProp, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -48,7 +48,16 @@ export function Tap({ style, children, haptic: withHaptic = true, scaleTo = 0.96
 }
 
 export type IconName = keyof typeof MaterialCommunityIcons.glyphMap;
-export const Icon = MaterialCommunityIcons;
+const FLIP: Record<string, string> = {
+  'arrow-left': 'arrow-right', 'arrow-right': 'arrow-left', 'chevron-left': 'chevron-right', 'chevron-right': 'chevron-left',
+};
+
+/** MaterialCommunityIcons that mirrors direction arrows/chevrons in right-to-left languages. */
+export function Icon(props: ComponentProps<typeof MaterialCommunityIcons>) {
+  const { isRtl } = useI18n();
+  const name = isRtl && FLIP[props.name as string] ? (FLIP[props.name as string] as typeof props.name) : props.name;
+  return <MaterialCommunityIcons {...props} name={name} />;
+}
 
 export function Chip({ label, active, onPress, icon }: { label: string; active?: boolean; onPress?: () => void; icon?: IconName }) {
   const c = useTheme();
@@ -186,7 +195,7 @@ export function SectionTitle({ title, action, onAction }: { title: string; actio
   );
 }
 
-export function EmptyState({ icon, title, hint }: { icon: IconName; title: string; hint: string }) {
+export function EmptyState({ icon, title, hint, action }: { icon: IconName; title: string; hint: string; action?: ReactNode }) {
   const c = useTheme();
   const { tf } = useI18n();
   return (
@@ -196,6 +205,7 @@ export function EmptyState({ icon, title, hint }: { icon: IconName; title: strin
       </View>
       <Text style={[styles.emptyTitle, tf('bold'), { color: c.text }]}>{title}</Text>
       <Text style={[styles.emptyHint, tf(), { color: c.sub }]}>{hint}</Text>
+      {action}
     </View>
   );
 }

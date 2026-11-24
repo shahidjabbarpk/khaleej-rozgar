@@ -336,4 +336,7 @@ export const ps: Partial<Record<Key, string>> = {
   errorGeneric: 'یوه ستونزه پېښه شوه. انټرنېټ وګورئ او بیا هڅه وکړئ.',
   loading: 'راپورته کېږي…',
   retry: 'بیا هڅه',
+  noMyJobs: 'ستاسو د خوښې دندې اوس نشته',
+  noMyJobsHint: 'هر ساعت نوې دندې راځي. تر هغه ستاسو د هېواد ټولې دندې وګورئ.',
+  seeAllJobs: 'ټولې دندې وګورئ',
 };
