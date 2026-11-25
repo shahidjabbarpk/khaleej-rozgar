@@ -27,6 +27,8 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           WORKER_URL: ${{ secrets.WORKER_URL }}
           FEED_KEY: ${{ secrets.FEED_KEY }}
+          CAREERJET_KEY: ${{ secrets.CAREERJET_KEY }}
+          JOOBLE_KEYS: ${{ secrets.JOOBLE_KEYS }}
       - name: Commit updated feed
         run: |
           git config user.name "khaleej-feed-bot"
