@@ -49,7 +49,7 @@ export const ps: Partial<Record<Key, string>> = {
   'cat.construction': 'ودانۍ او مزدوري',
   'cat.cleaning': 'پاکاري او کور ساتنه',
   'cat.hotel': 'هوټل او رستورانت',
-  'cat.security': 'امنیتي ساتونکی',
+  'cat.security': 'امنیت او خوندیتوب (HSE)',
   'cat.sales': 'پلور او دوکان',
   'cat.office': 'دفتر او اداره',
   'cat.it': 'معلوماتي ټکنالوژي او کمپیوټر',

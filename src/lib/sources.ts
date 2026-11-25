@@ -88,6 +88,14 @@ const CATS: [Category, RegExp][] = [
   ['office', /\baccount|finance|admin|secretary|receptionist|hr\b|human resources|recruit|clerk|legal|analyst|manager|officer|coordinator|assistant|customer service|call center|مدير|موظف|محاسب/i],
 ];
 
+/** "Who can apply" from the job text when the source doesn't say (visa / nationals-only wording). */
+export function eligibilityFrom(text: string): Eligibility {
+  if (/(nationals? only|for (uae|saudi|qatari|kuwaiti|omani|bahraini) nationals|saudi(zation)? only|emiratis? only|localization|للمواطنين فقط)/i.test(text)) return 'locals';
+  if (/(visa (will be )?provided|visa sponsorship|employment visa|company visa|free visa|visa \+|visa,)/i.test(text)) return 'visa';
+  if (/(expats?|all nationalities|any nationality|overseas candidates)/i.test(text)) return 'expats';
+  return 'unknown';
+}
+
 /** Trade from the job title (first match wins; office is the broad fallback before 'other'). */
 export function categorize(title: string): Category {
   for (const [c, rx] of CATS) if (rx.test(title)) return c;
@@ -107,7 +115,7 @@ export const snippet = (html: string | undefined, max = 1500) => (html ? stripHt
 
 const isoDay = (s?: string | null) => (s && !Number.isNaN(Date.parse(s)) ? new Date(s).toISOString().slice(0, 10) : undefined);
 
-function make(p: {
+export function make(p: {
   source: Source; key: string; title: string; organization: string; country: Country; location: string; url: string;
   sector?: 'govt' | 'private'; eligibility?: Eligibility; description?: string; postedDate?: string; jobType?: string;
   logo?: string; now: string;
@@ -121,7 +129,7 @@ function make(p: {
     category: categorize(p.title),
     country: p.country,
     cities: citiesOf(p.location, p.country),
-    eligibility: p.eligibility ?? 'unknown',
+    eligibility: p.eligibility ?? eligibilityFrom(`${p.title} ${p.description ?? ''}`),
     url: p.url,
     applyUrl: p.url,
     description: p.description,

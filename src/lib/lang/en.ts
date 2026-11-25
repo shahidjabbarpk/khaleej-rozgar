@@ -56,7 +56,7 @@ export const en = {
   'cat.construction': 'Construction & Labour',
   'cat.cleaning': 'Cleaning & Housekeeping',
   'cat.hotel': 'Hotel & Restaurant',
-  'cat.security': 'Security',
+  'cat.security': 'Security & Safety (HSE)',
   'cat.sales': 'Sales & Shop',
   'cat.office': 'Office & Admin',
   'cat.it': 'IT & Computer',
@@ -81,6 +81,8 @@ export const en = {
   'src.smartrecruiters': 'Company website',
   'src.workable': 'Company website',
   'src.careerjet': 'Jobs by Careerjet',
+  'src.jooble': 'Jobs by Jooble',
+  'src.amazon': 'Amazon careers',
   'src.admin': 'Official source',
   'src.user': 'Posted in app',
 

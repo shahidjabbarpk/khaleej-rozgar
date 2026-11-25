@@ -49,7 +49,7 @@ export const tl: Partial<Record<Key, string>> = {
   'cat.construction': 'Construction at Labor',
   'cat.cleaning': 'Paglilinis at Housekeeping',
   'cat.hotel': 'Hotel at Restaurant',
-  'cat.security': 'Security Guard',
+  'cat.security': 'Security at Safety (HSE)',
   'cat.sales': 'Sales at Tindahan',
   'cat.office': 'Opisina at Admin',
   'cat.it': 'IT at Computer',

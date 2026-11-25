@@ -32,7 +32,7 @@ export const ar: Partial<Record<Key, string>> = {
   'cat.construction': 'بناء وعمالة',
   'cat.cleaning': 'تنظيف وتدبير منزلي',
   'cat.hotel': 'فنادق ومطاعم',
-  'cat.security': 'حراسة وأمن',
+  'cat.security': 'حراسة وأمن وسلامة (HSE)',
   'cat.sales': 'مبيعات ومحلات',
   'cat.office': 'مكتب وإدارة',
   'cat.it': 'تقنية وحاسوب',

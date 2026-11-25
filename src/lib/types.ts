@@ -18,7 +18,7 @@ export type Eligibility = 'locals' | 'expats' | 'visa' | 'anyone' | 'unknown';
  *  user          - posted inside the app by an employer
  */
 export type Source =
-  | 'dubaicareers' | 'greenhouse' | 'lever' | 'smartrecruiters' | 'workable' | 'careerjet' | 'admin' | 'user';
+  | 'dubaicareers' | 'greenhouse' | 'lever' | 'smartrecruiters' | 'workable' | 'careerjet' | 'jooble' | 'amazon' | 'admin' | 'user';
 
 export type Sector = 'govt' | 'private';
 

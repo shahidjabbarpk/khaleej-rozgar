@@ -49,7 +49,7 @@ export const si: Partial<Record<Key, string>> = {
   'cat.construction': 'ඉදිකිරීම් සහ කම්කරු',
   'cat.cleaning': 'පිරිසිදු කිරීම සහ ගෘහ සේවා',
   'cat.hotel': 'හෝටල් සහ අවන්හල්',
-  'cat.security': 'ආරක්ෂක',
+  'cat.security': 'ආරක්ෂක සහ සේෆ්ටි (HSE)',
   'cat.sales': 'විකුණුම් සහ සාප්පු',
   'cat.office': 'කාර්යාල සහ පරිපාලන',
   'cat.it': 'තොරතුරු තාක්ෂණ සහ පරිගණක',

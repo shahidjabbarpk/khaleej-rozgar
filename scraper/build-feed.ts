@@ -10,6 +10,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dedupe, fetchAllSources } from '../src/lib/sources.ts';
 import { isStale } from '../src/lib/format.ts';
+import { checkPost } from '../src/lib/scam.ts';
+import { fetchAmazon, fetchCareerjet, fetchJooble, ROTATING } from './aggregators.ts';
 import { pushText, topicFor } from '../src/lib/topics.ts';
 import type { Feed, Job } from '../src/lib/types.ts';
 import { sendPush, serviceAccount } from './fcm.ts';
@@ -68,16 +70,28 @@ async function main() {
   const meta = readJson<{ pushed: string[] }>(META, { pushed: [] });
   const known = new Map(prev.jobs.map((j) => [j.id, j]));
 
-  const results = await fetchAllSources(now);
+  const extra = async (name: string, p: Promise<Job[]>) => {
+    try { return { name, jobs: await p }; } catch (e) { return { name, jobs: [] as Job[], error: String((e as Error)?.message ?? e) }; }
+  };
+  const results = [...await fetchAllSources(now), ...await Promise.all([
+    extra('amazon', fetchAmazon(now)), extra('careerjet', fetchCareerjet(now)), extra('jooble', fetchJooble(now)),
+  ])];
   for (const r of results) console.log(`${r.name}: ${r.jobs.length}${r.error ? `  ERROR ${r.error}` : ''}`);
   const failed = new Set(results.filter((r) => r.error).map((r) => r.name.split(':')[0]));
 
   let jobs = dedupe([...results.flatMap((r) => r.jobs), ...(await phoneFinds())]);
   // a source that failed this hour keeps its old jobs instead of losing them all
-  const keepOld = prev.jobs.filter((j) => failed.has(j.source) && !jobs.some((n) => n.id === j.id));
+  // aggregator queries rotate by the hour: keep their jobs for ROTATE_KEEP_DAYS after we first saw them
+  const ROTATE_KEEP_DAYS = 7;
+  const ids = new Set(jobs.map((j) => j.id));
+  const keepOld = prev.jobs.filter((j) => !ids.has(j.id) && (failed.has(j.source)
+    || (ROTATING.includes(j.source) && Date.now() - Date.parse(j.firstSeen) < ROTATE_KEEP_DAYS * 86_400_000)));
   jobs = [...jobs, ...keepOld].map((j) => ({ ...j, firstSeen: known.get(j.id)?.firstSeen ?? now }))
     // old jobs are not live jobs: drop anything posted more than MAX_JOB_AGE_DAYS ago
-    .filter((j) => !isStale(j));
+    .filter((j) => !isStale(j))
+    // never pass on a job that asks workers for money (visa fee, registration fee...) - same rule as user posts
+    .filter((j) => j.source === 'dubaicareers' || checkPost(`${j.title}\n${j.description ?? ''}`, true).ok);
+  jobs = dedupe(jobs);
   jobs.sort((a, b) => (b.postedDate ?? b.firstSeen.slice(0, 10)).localeCompare(a.postedDate ?? a.firstSeen.slice(0, 10)));
 
   const fresh = jobs.filter((j) => !known.has(j.id));

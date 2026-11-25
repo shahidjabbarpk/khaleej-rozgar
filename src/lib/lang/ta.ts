@@ -49,7 +49,7 @@ export const ta: Partial<Record<Key, string>> = {
   'cat.construction': 'கட்டுமானம் & கூலி',
   'cat.cleaning': 'சுத்தம் & வீட்டு பராமரிப்பு',
   'cat.hotel': 'ஹோட்டல் & உணவகம்',
-  'cat.security': 'பாதுகாப்பு',
+  'cat.security': 'பாதுகாப்பு & சேஃப்டி (HSE)',
   'cat.sales': 'விற்பனை & கடை',
   'cat.office': 'அலுவலகம் & நிர்வாகம்',
   'cat.it': 'ஐடி & கணினி',
