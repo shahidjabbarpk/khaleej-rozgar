@@ -1,17 +1,17 @@
 {
- "updatedAt": "2026-11-27T05:06:11.090Z",
- "total": 393,
- "new": 1,
- "pushes": 1,
+ "updatedAt": "2026-11-27T15:12:00.881Z",
+ "total": 401,
+ "new": 15,
+ "pushes": 8,
  "sources": {
-  "dubaicareers": 303,
-  "smartrecruiters:DeliveryHero": 103,
+  "dubaicareers": 306,
+  "smartrecruiters:DeliveryHero": 106,
   "greenhouse:careem": 5,
   "greenhouse:tamara": 21,
   "workable:foodics": 22,
   "workable:salla": 28,
   "workable:lucidya": 39,
-  "amazon": 138,
+  "amazon": 143,
   "careerjet": 0,
   "jooble": 0
  },
@@ -681,6 +681,21 @@
   "gr-3882d4b63042fa0b",
   "am-6beeb47c03c5cbbf",
   "am-6beeba7c03c5d5f1",
-  "du-dddadd69519277a9"
+  "du-dddadd69519277a9",
+  "du-95ea8081ac3a7374",
+  "du-ddb8e7695175a241",
+  "du-ddb8e6695175a08e",
+  "sm-fd802976fd74d839",
+  "am-bb23a87c30fd7547",
+  "sm-8a0f8e306562ee9b",
+  "am-41fd5b7bec673eb3",
+  "sm-1d0f8bf0f9aa25f2",
+  "sm-f8ba3dea9c55dc12",
+  "sm-240573027479f839",
+  "am-c294517c34db89d8",
+  "am-41f36c7bec5f0711",
+  "am-41fd677bec675317",
+  "am-9a06898dc82fd854",
+  "am-bb23a57c30fd702e"
  ]
 }
